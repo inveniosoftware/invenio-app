@@ -22,3 +22,6 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 #
+
+-e git+https://github.com/alisaifee/flask-limiter.git#egg=Flask-Limiter
+-e git+https://github.com/GoogleCloudPlatform/flask-talisman.git#egg=Flask-Talisman
