@@ -41,3 +41,6 @@ Instance specific configuration is loaded from:
 Templates are loaded from:
 
 - ``<instance-path>/templates/``
+
+.. automodule:: invenio_app.config
+   :members:

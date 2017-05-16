@@ -35,7 +35,7 @@ tests_require = [
     'check-manifest>=0.25',
     'coverage>=4.0',
     'isort>=4.2.2',
-    'pydocstyle>=1.0.0',
+    'pydocstyle>=2.0.0',
     'pytest-cache>=1.0',
     'pytest-cov>=1.8.0',
     'pytest-pep8>=1.0.6',
@@ -44,7 +44,7 @@ tests_require = [
 
 extras_require = {
     'docs': [
-        'Sphinx>=1.5.1',
+        'Sphinx>=1.5.6,<1.6',
     ],
     'tests': tests_require,
 }
@@ -59,6 +59,8 @@ setup_requires = [
 
 install_requires = [
     'flask-celeryext>=0.2.2',
+    'flask-limiter>=0.9.4',
+    'flask-talisman>=0.3.2',
     'invenio-base>=1.0.0a14,<1.1.0',
     'invenio-config>=1.0.0b2,<1.1.0',
 ]
@@ -89,6 +91,12 @@ setup(
     entry_points={
         'console_scripts': [
             'invenio = invenio_app.cli:cli',
+        ],
+        'invenio_base.api_apps': [
+            'invenio_app = invenio_app:InvenioApp',
+        ],
+        'invenio_base.apps': [
+            'invenio_app = invenio_app:InvenioApp',
         ],
     },
     extras_require=extras_require,
