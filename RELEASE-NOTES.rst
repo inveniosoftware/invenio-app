@@ -1,8 +1,8 @@
 ======================
- Invenio-App v1.0.0a1
+ Invenio-App v1.0.0a2
 ======================
 
-Invenio-App v1.0.0a1 was released on March 5, 2017.
+Invenio-App v1.0.0a2 was released on May 24, 2017.
 
 About
 -----
@@ -16,7 +16,7 @@ What's new
 Installation
 ------------
 
-   $ pip install invenio-app==1.0.0a1
+   $ pip install invenio-app==1.0.0a2
 
 Documentation
 -------------
