@@ -60,6 +60,7 @@ setup_requires = [
 install_requires = [
     'flask-celeryext>=0.2.2',
     'flask-limiter>=0.9.4',
+    'flask-shell-ipython>=0.3.0',
     'flask-talisman>=0.3.2',
     'invenio-base>=1.0.0a14,<1.1.0',
     'invenio-config>=1.0.0b2,<1.1.0',
