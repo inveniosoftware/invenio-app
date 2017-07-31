@@ -24,10 +24,14 @@
 
 """Invenio App configuration.
 
-Please also see
+`Invenio-App` is partially overwriting default configuration of `Limiter` and
+`Talisman` applications.
+You can find below more details about which configuration are set.
+
+For more information, please also see
 `Flask-Limiter <https://flask-limiter.readthedocs.io/en/stable/>`_ and
-`Flask-Talisman <https://github.com/GoogleCloudPlatform/flask-talisman/>`__ for
-many more configuration options.
+`Flask-Talisman <https://github.com/GoogleCloudPlatform/flask-talisman/>`__
+websites.
 """
 
 RATELIMIT_DEFAULT = '5000/hour'
@@ -49,8 +53,10 @@ RATELIMIT_HEADERS_ENABLED = True
 APP_ENABLE_SECURE_HEADERS = True
 """Enable Secure Headers. (Default: ``True``)
 
-For development you can set ```DEBUG = True``` to disable any side effects
-such as force ``https`` redirect on your development environment.
+In case you want to disable completely `Talisman`, you can set to `False`.
+
+Remember that, for development purpose, setting ```DEBUG = True``` is already
+enough to disable any side effects such as force ``https``.
 
 .. note::
     `W3C
@@ -75,11 +81,19 @@ APP_DEFAULT_SECURE_HEADERS = {
     'session_cookie_secure': True,
     'session_cookie_http_only': True
 }
-"""Default Secure Headers.
+"""Talisman default Secure Headers configuration.
+
+As default, invenio assumes that HTTPS is enabled.
+If you are not using SSL, then remember to disable the `force_https`
+configuration options related to HTTPS.
+
+Please note that, as default talisman behaviour, if Flask `DEBUG` mode is on,
+then also many security barriers are automatically switched off
+(e.g. `force_https`).
 
 .. note:: Overwrite
     `Flask-Talisman
-    <https://github.com/GoogleCloudPlatform/flask-talisman>`_
+    <https://github.com/GoogleCloudPlatform/flask-talisman>`_ configuration.
 
 .. code-block:: python
 
