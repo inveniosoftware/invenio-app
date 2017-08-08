@@ -84,12 +84,12 @@ APP_DEFAULT_SECURE_HEADERS = {
 """Talisman default Secure Headers configuration.
 
 As default, invenio assumes that HTTPS is enabled.
-If you are not using SSL, then remember to disable the `force_https`
-configuration options related to HTTPS.
+If you are not using SSL, then remember to disable the `force_https` and
+`session_cookie_secure` configuration options related to HTTPS.
 
-Please note that, as default talisman behaviour, if Flask `DEBUG` mode is on,
+Please note that, as default `Talisman` behaviour, if Flask `DEBUG` mode is on,
 then also many security barriers are automatically switched off
-(e.g. `force_https`).
+(e.g. `force_https` and `session_cookie_secure`).
 
 .. note:: Overwrite
     `Flask-Talisman

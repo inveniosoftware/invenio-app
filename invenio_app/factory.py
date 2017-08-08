@@ -32,6 +32,7 @@ import sys
 import pkg_resources
 from invenio_base.app import create_app_factory
 from invenio_base.wsgi import create_wsgi_factory, wsgi_proxyfix
+from invenio_cache import BytecodeCache
 from invenio_config import create_config_loader
 from jinja2 import ChoiceLoader, FileSystemLoader
 
@@ -75,12 +76,11 @@ def config_loader(app, **kwargs_config):
             app.jinja_loader,
         ])
 
-    # FIXME: Add Jinja byte code caching.
-    # app.jinja_options = dict(
-    #     app.jinja_options,
-    #     cache_size=1000,
-    #     bytecode_cache=RedisBytecodeCache(app)
-    # )
+    app.jinja_options = dict(
+        app.jinja_options,
+        cache_size=1000,
+        bytecode_cache=BytecodeCache(app)
+    )
 
     invenio_config_loader(app, **kwargs_config)
 

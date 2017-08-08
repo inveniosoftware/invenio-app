@@ -40,6 +40,7 @@ tests_require = [
     'pytest-cov>=1.8.0',
     'pytest-pep8>=1.0.6',
     'pytest>=2.8.0',
+    'redis>=2.10.5',
 ]
 
 extras_require = {
@@ -63,6 +64,7 @@ install_requires = [
     'flask-shell-ipython>=0.3.0',
     'flask-talisman>=0.3.2',
     'invenio-base>=1.0.0a14,<1.1.0',
+    'invenio-cache>=1.0.0b1,<1.1.0',
     'invenio-config>=1.0.0b2,<1.1.0',
 ]
 

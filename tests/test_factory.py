@@ -26,8 +26,16 @@
 
 from __future__ import absolute_import, print_function
 
+from invenio_app.factory import create_ui
+
 
 def test_version():
     """Test version import."""
     from invenio_app import __version__
     assert __version__
+
+
+def test_config_loader():
+    """Test config loader."""
+    app = create_ui()
+    assert 'cache_size' in app.jinja_options

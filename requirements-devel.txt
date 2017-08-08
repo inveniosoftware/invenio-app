@@ -23,5 +23,9 @@
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 #
 
--e git+https://github.com/alisaifee/flask-limiter.git#egg=Flask-Limiter
 -e git+https://github.com/GoogleCloudPlatform/flask-talisman.git#egg=Flask-Talisman
+-e git+https://github.com/alisaifee/flask-limiter.git#egg=Flask-Limiter
+-e git+https://github.com/inveniosoftware/flask-celeryext.git#egg=flask-celeryext
+-e git+https://github.com/inveniosoftware/invenio-base.git#egg=invenio-base
+-e git+https://github.com/inveniosoftware/invenio-cache.git#egg=invenio-cache
+-e git+https://github.com/inveniosoftware/invenio-config.git#egg=invenio-config
