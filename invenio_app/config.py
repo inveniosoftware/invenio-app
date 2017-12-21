@@ -112,3 +112,18 @@ then also many security barriers are automatically switched off
         \"\"\"Override policies for the specific view.\"\"\"
         return 'Jessica Jones'
 """
+
+APP_ALLOWED_HOSTS = None
+"""A list of host/domain names that can be served.
+
+This is a security measure to prevent HTTP Host header attacks, which are
+possible even under many seemingly-safe web server configurations.
+
+By default all hosts are allowed. Values in this list can be fully qualified
+names (e.g. 'www.example.com'). The validation only applies to
+``request.host``.
+
+In addition to this configuration variable, you should make sure that your
+web server does not route requests to the application with an invalid Host
+header.
+"""

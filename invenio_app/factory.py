@@ -36,6 +36,8 @@ from invenio_cache import BytecodeCache
 from invenio_config import create_config_loader
 from jinja2 import ChoiceLoader, FileSystemLoader
 
+from .helpers import TrustedHostsMixin
+
 env_prefix = 'INVENIO'
 
 invenio_config_loader = create_config_loader(
@@ -86,7 +88,7 @@ def config_loader(app, **kwargs_config):
 
 
 def app_class():
-    """Determine Flask application class.
+    """Create Flask application class.
 
     Invenio-Files-REST needs to patch the Werkzeug form parsing in order to
     support streaming large file uploads. This is done by subclassing the Flask
@@ -94,11 +96,18 @@ def app_class():
     """
     try:
         pkg_resources.get_distribution('invenio-files-rest')
-        from invenio_files_rest.app import Flask
-        return Flask
+        from invenio_files_rest.app import Flask as FlaskBase
     except pkg_resources.DistributionNotFound:
-        from flask import Flask
-        return Flask
+        from flask import Flask as FlaskBase
+
+    # Add Host header validation via APP_ALLOWED_HOSTS configuration variable.
+    class Request(TrustedHostsMixin, FlaskBase.request_class):
+        pass
+
+    class Flask(FlaskBase):
+        request_class = Request
+
+    return Flask
 
 
 create_api = create_app_factory(
@@ -122,6 +131,7 @@ create_ui = create_app_factory(
     wsgi_factory=wsgi_proxyfix(),
     instance_path=instance_path,
     static_folder=static_folder,
+    app_class=app_class(),
 )
 """Flask application factory for Invenio UI."""
 
@@ -134,6 +144,7 @@ create_app = create_app_factory(
     wsgi_factory=wsgi_proxyfix(create_wsgi_factory({'/api': create_api})),
     instance_path=instance_path,
     static_folder=static_folder,
+    app_class=app_class(),
 )
 """Flask application factory for combined UI + REST API.
 
