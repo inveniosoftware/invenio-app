@@ -46,9 +46,9 @@ install_requires = [
     'flask-limiter>=0.9.4',
     'flask-shell-ipython>=0.3.0',
     'flask-talisman>=0.3.2',
-    'invenio-base>=1.0.0a14,<1.1.0',
-    'invenio-cache>=1.0.0b1,<1.1.0',
-    'invenio-config>=1.0.0b2,<1.1.0',
+    'invenio-base>=1.0.0,<1.1.0',
+    'invenio-cache>=1.0.0,<1.1.0',
+    'invenio-config>=1.0.0,<1.1.0',
 ]
 
 packages = find_packages()
@@ -101,6 +101,6 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
     ],
 )
