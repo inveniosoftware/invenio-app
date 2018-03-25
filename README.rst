@@ -9,6 +9,9 @@
  Invenio-App
 =============
 
+.. image:: https://img.shields.io/github/license/inveniosoftware/invenio-app.svg
+        :target: https://github.com/inveniosoftware/invenio-app/blob/master/LICENSE
+
 .. image:: https://img.shields.io/travis/inveniosoftware/invenio-app.svg
         :target: https://travis-ci.org/inveniosoftware/invenio-app
 
