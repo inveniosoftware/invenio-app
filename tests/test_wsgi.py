@@ -29,9 +29,9 @@ def wsgi_output(application):
 
 def test_wsgi(wsgi_apps):
     """Test wsgi."""
-    create_app, create_ui, create_api = wsgi_apps
+    create_ui_api, create_ui, create_api = wsgi_apps
 
-    res = wsgi_output(create_app())
+    res = wsgi_output(create_ui_api())
     assert res['status'] == '404 NOT FOUND'
 
     res = wsgi_output(create_ui())

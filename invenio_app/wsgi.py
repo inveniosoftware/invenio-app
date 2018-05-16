@@ -10,9 +10,9 @@
 
 from __future__ import absolute_import, print_function
 
-from .factory import create_app
+from .factory import create_ui_api
 
-application = create_app()
+application = create_ui_api()
 """Combined UI + REST Flask application.
 
 REST API is mounted under ``/api``.

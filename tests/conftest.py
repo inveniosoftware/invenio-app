@@ -62,9 +62,9 @@ def wsgi_apps():
         wsgi_factory=wsgi_proxyfix(),
     )
     # Combined
-    create_app = create_app_factory(
+    create_ui_api = create_app_factory(
         'invenio',
         config_loader=_config,
         wsgi_factory=wsgi_proxyfix(create_wsgi_factory({'/api': create_api})),
     )
-    return create_app, create_ui, create_api
+    return create_ui_api, create_ui, create_api

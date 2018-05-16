@@ -119,7 +119,7 @@ create_ui = create_app_factory(
 )
 """Flask application factory for Invenio UI."""
 
-create_app = create_app_factory(
+create_ui_api = create_app_factory(
     'invenio',
     config_loader=config_loader,
     blueprint_entry_points=['invenio_base.blueprints'],
