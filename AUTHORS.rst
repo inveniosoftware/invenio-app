@@ -8,6 +8,7 @@
 Contributors
 ============
 
+- Alexander Ioannidis
 - Harris Tzovanakis
 - Lars Holm Nielsen
 - Leonardo Rossi

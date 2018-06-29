@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 1.0.1 (released 2018-06-29)
+
+- Pin Flask-Talisman.
+
 Version 1.0.0 (released 2018-03-23)
 
 - Initial public release.
