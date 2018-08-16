@@ -58,7 +58,8 @@ APP_DEFAULT_SECURE_HEADERS = {
     'strict_transport_security_max_age': 31556926,  # One year in seconds
     'strict_transport_security_include_subdomains': True,
     'content_security_policy': {
-        'default-src': '\'self\'',
+        'default-src': ["'self'"],
+        'object-src': ["'none'"]
     },
     'content_security_policy_report_uri': None,
     'content_security_policy_report_only': False,

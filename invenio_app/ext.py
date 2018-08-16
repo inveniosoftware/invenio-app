@@ -56,6 +56,11 @@ class InvenioApp(object):
         :param app: An instance of :class:`~flask.Flask`.
         """
         config_apps = ['APP_', 'RATELIMIT_']
+        flask_talisman_debug_mode = ["'unsafe-inline'"]
         for k in dir(config):
             if any([k.startswith(prefix) for prefix in config_apps]):
                 app.config.setdefault(k, getattr(config, k))
+        if app.config['DEBUG']:
+            app.config['APP_DEFAULT_SECURE_HEADERS'][
+                'content_security_policy']['default-src'] += \
+                flask_talisman_debug_mode
