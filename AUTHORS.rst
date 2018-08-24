@@ -9,8 +9,10 @@ Contributors
 ============
 
 - Alexander Ioannidis
+- Dinos Kousidis
 - Harris Tzovanakis
 - Lars Holm Nielsen
 - Leonardo Rossi
 - Nikos Filippakis
 - Rémi Ducceschi
+- Tibor Simko

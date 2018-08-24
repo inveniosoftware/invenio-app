@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 1.0.2 (released 2018-08-24)
+
+- Allows use of Flask-DebugToolbar when running in DEBUG mode.
+
 Version 1.0.1 (released 2018-06-29)
 
 - Pin Flask-Talisman.
