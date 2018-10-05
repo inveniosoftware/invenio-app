@@ -36,8 +36,8 @@ def test_headers(app):
     def jessica_jones():
         return 'jessica jones'
 
-    @app.route('/avangers')
-    def avangers():
+    @app.route('/avengers')
+    def avengers():
         return 'infinity war'
 
     with app.test_client() as client:
@@ -53,7 +53,7 @@ def test_headers(app):
         assert res.headers['X-RateLimit-Remaining']
         assert res.headers['X-RateLimit-Reset']
 
-        res = client.get('/avangers')
+        res = client.get('/avengers')
         assert res.status_code == 200
         assert res.headers['X-Content-Security-Policy']
         assert res.headers['X-Content-Type-Options']
@@ -62,3 +62,31 @@ def test_headers(app):
         assert res.headers['X-RateLimit-Limit']
         assert res.headers['X-RateLimit-Remaining']
         assert res.headers['X-RateLimit-Reset']
+
+
+def _test_csp_default_src(app, expect):
+    """Assert that the Content-Security-Policy header is the expect param."""
+    ext = InvenioApp(app)
+
+    @app.route('/captain_america')
+    def captain_america():
+        return 'captain america'
+
+    with app.test_client() as client:
+        res = client.get('/captain_america')
+        assert res.status_code == 200
+        assert res.headers['Content-Security-Policy'] == expect
+        assert res.headers['X-Content-Security-Policy'] == expect
+
+
+def test_csp_default_src_when_debug_false(app):
+    """Test the Content-Security-Policy header when app debug is False."""
+    expect = "default-src 'self'"
+    _test_csp_default_src(app, expect)
+
+
+def test_csp_default_src_when_debug_true(app):
+    """Test the Content-Security-Policy header when app debug is True."""
+    app.config['DEBUG'] = True
+    expect = "default-src 'unsafe-inline'"
+    _test_csp_default_src(app, expect)
