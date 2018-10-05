@@ -61,6 +61,13 @@ class InvenioApp(object):
             if any([k.startswith(prefix) for prefix in config_apps]):
                 app.config.setdefault(k, getattr(config, k))
         if app.config['DEBUG']:
+            # set defaults if config overridden
+            app.config.setdefault('APP_DEFAULT_SECURE_HEADERS', {})
+            app.config['APP_DEFAULT_SECURE_HEADERS'].setdefault(
+                'content_security_policy', {})
+            app.config['APP_DEFAULT_SECURE_HEADERS'][
+                'content_security_policy'].setdefault('default-src', [])
+            # add default csp value when debug
             app.config['APP_DEFAULT_SECURE_HEADERS'][
                 'content_security_policy']['default-src'] += \
                 flask_talisman_debug_mode
