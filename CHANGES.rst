@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 1.0.3 (released 2018-10-08)
+
+- Fix Content Security Policy headers when running in DEBUG mode.
+
 Version 1.0.2 (released 2018-08-24)
 
 - Allows use of Flask-DebugToolbar when running in DEBUG mode.
