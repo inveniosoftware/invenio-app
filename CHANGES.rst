@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 1.0.4 (released 2018-10-11)
+
+- Fix Content Security Policy headers when set empty in DEBUG mode.
+
 Version 1.0.3 (released 2018-10-08)
 
 - Fix Content Security Policy headers when running in DEBUG mode.
