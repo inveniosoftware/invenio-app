@@ -75,18 +75,26 @@ def _test_csp_default_src(app, expect):
     with app.test_client() as client:
         res = client.get('/captain_america')
         assert res.status_code == 200
-        assert res.headers['Content-Security-Policy'] == expect
-        assert res.headers['X-Content-Security-Policy'] == expect
+        assert res.headers.get('Content-Security-Policy') == expect
+        assert res.headers.get('X-Content-Security-Policy') == expect
 
 
 def test_csp_default_src_when_debug_false(app):
     """Test the Content-Security-Policy header when app debug is False."""
-    expect = "default-src 'self'"
+    expect = "default-src 'self'; object-src 'none'"
     _test_csp_default_src(app, expect)
 
 
 def test_csp_default_src_when_debug_true(app):
     """Test the Content-Security-Policy header when app debug is True."""
     app.config['DEBUG'] = True
-    expect = "default-src 'unsafe-inline'"
+    expect = "default-src 'self' 'unsafe-inline'; object-src 'none'"
+    _test_csp_default_src(app, expect)
+
+
+def test_empty_csp_when_set_empty(app):
+    """Test empty Content-Security-Policy header when set emtpy."""
+    app.config['DEBUG'] = True
+    app.config['APP_DEFAULT_SECURE_HEADERS']['content_security_policy'] = {}
+    expect = None
     _test_csp_default_src(app, expect)
