@@ -13,6 +13,8 @@ from __future__ import absolute_import, print_function
 import pytest
 from flask import Flask
 
+from invenio_app.config import APP_DEFAULT_SECURE_HEADERS
+
 
 @pytest.fixture()
 def base_app():
@@ -21,10 +23,9 @@ def base_app():
     app_.config.update(
         SECRET_KEY='SECRET_KEY',
         TESTING=True,
-        APP_DEFAULT_SECURE_HEADERS=dict(
-            force_https=False,
-        )
     )
+    app_.config['APP_DEFAULT_SECURE_HEADERS'] = APP_DEFAULT_SECURE_HEADERS
+    app_.config['APP_DEFAULT_SECURE_HEADERS']['force_https'] = False
     return app_
 
 
@@ -45,10 +46,9 @@ def wsgi_apps():
         app.config.update(
             SECRET_KEY='SECRET_KEY',
             TESTING=True,
-            APP_DEFAULT_SECURE_HEADERS=dict(
-                force_https=False,
-            )
         )
+        app.config['APP_DEFAULT_SECURE_HEADERS'] = APP_DEFAULT_SECURE_HEADERS
+        app.config['APP_DEFAULT_SECURE_HEADERS']['force_https'] = False
     # API
     create_api = create_app_factory(
         'invenio',
