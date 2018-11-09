@@ -11,6 +11,7 @@
 from __future__ import absolute_import, print_function
 
 from flask import Flask
+from werkzeug.http import parse_options_header
 
 from invenio_app import InvenioApp
 
@@ -64,6 +65,11 @@ def test_headers(app):
         assert res.headers['X-RateLimit-Reset']
 
 
+def _normalize_csp_header(header):
+    """Normalize a CSP header for consistent comparisons."""
+    return {p.strip() for p in (header or '').split(';')}
+
+
 def _test_csp_default_src(app, expect):
     """Assert that the Content-Security-Policy header is the expect param."""
     ext = InvenioApp(app)
@@ -75,8 +81,12 @@ def _test_csp_default_src(app, expect):
     with app.test_client() as client:
         res = client.get('/captain_america')
         assert res.status_code == 200
-        assert res.headers.get('Content-Security-Policy') == expect
-        assert res.headers.get('X-Content-Security-Policy') == expect
+        assert _normalize_csp_header(
+            res.headers.get('Content-Security-Policy')
+        ) == _normalize_csp_header(expect)
+        assert _normalize_csp_header(
+            res.headers.get('X-Content-Security-Policy')
+        ) == _normalize_csp_header(expect)
 
 
 def test_csp_default_src_when_debug_false(app):
