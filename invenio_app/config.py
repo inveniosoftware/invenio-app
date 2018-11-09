@@ -112,3 +112,7 @@ In addition to this configuration variable, you should make sure that your
 web server does not route requests to the application with an invalid Host
 header.
 """
+
+APP_HEALTH_BLUEPRINT_ENABLED = True
+"""Enable the ping (healthcheck) blueprint. (Default: ``False``)
+"""

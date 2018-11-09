@@ -10,10 +10,14 @@
 
 from __future__ import absolute_import, print_function
 
+import logging
+
 import pkg_resources
+from flask import Blueprint
 from flask_limiter import Limiter
 from flask_limiter.util import get_ipaddr
 from flask_talisman import Talisman
+from werkzeug.utils import import_string
 
 from . import config
 
@@ -47,6 +51,19 @@ class InvenioApp(object):
             self.talisman = Talisman(
                 app, **app.config.get('APP_DEFAULT_SECURE_HEADERS', {})
             )
+        # Enable PING view
+        if app.config['APP_HEALTH_BLUEPRINT_ENABLED']:
+            blueprint = Blueprint('invenio_app_ping', __name__)
+
+            @blueprint.route('/ping')
+            def ping():
+                """Load balancer ping view."""
+                return 'OK'
+
+            ping.talisman_view_options = {'force_https': False}
+
+            app.register_blueprint(blueprint)
+
         # Register self
         app.extensions['invenio-app'] = self
 

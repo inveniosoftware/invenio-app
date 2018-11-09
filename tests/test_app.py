@@ -98,3 +98,12 @@ def test_empty_csp_when_set_empty(app):
     app.config['APP_DEFAULT_SECURE_HEADERS']['content_security_policy'] = {}
     expect = None
     _test_csp_default_src(app, expect)
+
+
+def test_default_health_blueprint(app):
+    app.config['APP_HEALTH_BLUEPRINT_ENABLED'] = True
+    # Initialize the app
+    InvenioApp(app)
+    with app.test_client() as client:
+        res = client.get('/ping')
+        assert res.status_code == 200
