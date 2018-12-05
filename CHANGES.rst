@@ -7,6 +7,11 @@
 
 Changes
 =======
+Version 1.0.5 (released 2018-12-05)
+
+- Add health check view
+
+- Fix response headers assertion in tests
 
 Version 1.0.4 (released 2018-10-11)
 
