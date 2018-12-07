@@ -117,3 +117,46 @@ def test_default_health_blueprint(app):
     with app.test_client() as client:
         res = client.get('/ping')
         assert res.status_code == 200
+
+
+def test_requestid(base_app):
+    """Test extraction of header id."""
+    InvenioApp(base_app)
+    with base_app.test_client() as client:
+        assert '1234' == client.get(
+            '/requestid',  headers={'X-Request-ID': '1234'}
+        ).get_data(as_text=True)
+
+
+def test_requestid_different_header(base_app):
+    """Test changing header name."""
+    base_app.config['APP_REQUESTID_HEADER'] = 'Request-ID'
+    InvenioApp(base_app)
+    with base_app.test_client() as client:
+        # Extracted
+        assert '1234' == client.get(
+            '/requestid',  headers={'Request-ID': '1234'}
+        ).get_data(as_text=True)
+        # Not extracted
+        assert '' == client.get(
+            '/requestid',  headers={'X-Request-ID': '1234'}
+        ).get_data(as_text=True)
+
+
+def test_requestid_cap_200(base_app):
+    """Test cap at 200 chars of request id."""
+    InvenioApp(base_app)
+    with base_app.test_client() as client:
+        assert '1'*200 == client.get(
+            '/requestid',  headers={'X-Request-ID': '1'*500}
+        ).get_data(as_text=True)
+
+
+def test_requestid_no_extraction(base_app):
+    """Test no extraction of header id."""
+    base_app.config['APP_REQUESTID_HEADER'] = None
+    InvenioApp(base_app)
+    with base_app.test_client() as client:
+        assert '' == client.get(
+            '/requestid',  headers={'X-Request-ID': '1234'}
+        ).get_data(as_text=True)

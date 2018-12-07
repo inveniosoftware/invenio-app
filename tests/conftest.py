@@ -26,6 +26,12 @@ def base_app():
     )
     app_.config['APP_DEFAULT_SECURE_HEADERS'] = APP_DEFAULT_SECURE_HEADERS
     app_.config['APP_DEFAULT_SECURE_HEADERS']['force_https'] = False
+
+    @app_.route('/requestid')
+    def requestid():
+        from flask import g  # Prevent pytest problems
+        return g.request_id if g and hasattr(g, 'request_id') else ''
+
     return app_
 
 
