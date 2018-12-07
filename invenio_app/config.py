@@ -116,3 +116,21 @@ header.
 APP_HEALTH_BLUEPRINT_ENABLED = True
 """Enable the ping (healthcheck) blueprint. (Default: ``False``)
 """
+
+APP_REQUESTID_HEADER = "X-Request-Id"
+"""Name of header containing a request id (max length 200 characters).
+
+If set, the request id will be extracted from the header and set on the global
+Flask ``g`` request object. The extracted request id can be used by other
+Invenio modules - e.g. Invenio-Logging could include it in log messages.
+
+The request id can be used to trace requests between systems to make
+troubleshooting easier.
+
+You can configure Nginx 1.10+ to automatically generate a request id and
+add it as a header to both the upstream WSGI server and downstream client::
+
+    add_header X-Request-ID $request_id;
+
+Set to ``None`` to not extract a request id.
+"""

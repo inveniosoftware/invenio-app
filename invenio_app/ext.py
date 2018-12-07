@@ -13,7 +13,7 @@ from __future__ import absolute_import, print_function
 import logging
 
 import pkg_resources
-from flask import Blueprint
+from flask import Blueprint, g, request
 from flask_limiter import Limiter
 from flask_limiter.util import get_ipaddr
 from flask_talisman import Talisman
@@ -63,6 +63,17 @@ class InvenioApp(object):
             ping.talisman_view_options = {'force_https': False}
 
             app.register_blueprint(blueprint)
+
+        requestid_header = app.config.get('APP_REQUESTID_HEADER')
+        if requestid_header:
+            @app.before_request
+            def set_request_id():
+                """Extracts a request id from an HTTP header."""
+                request_id = request.headers.get(requestid_header)
+                if request_id:
+                    # Capped at 200 to protect against malicious clients
+                    # sending very large headers.
+                    g.request_id = request_id[:200]
 
         # Register self
         app.extensions['invenio-app'] = self
