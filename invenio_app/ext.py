@@ -75,6 +75,13 @@ class InvenioApp(object):
                     # sending very large headers.
                     g.request_id = request_id[:200]
 
+        # If installed register the Flask-DebugToolbar extension
+        try:
+            from flask_debugtoolbar import DebugToolbarExtension
+            app.extensions['flask-debugtoolbar'] = DebugToolbarExtension(app)
+        except ImportError:
+            app.logger.debug('Flask-DebugToolbar extension not installed.')
+
         # Register self
         app.extensions['invenio-app'] = self
 
