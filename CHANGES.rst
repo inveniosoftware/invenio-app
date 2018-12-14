@@ -7,6 +7,11 @@
 
 Changes
 =======
+Version 1.1.0 (released 2019-12-14)
+
+- The Flask-DebugToolbar extension is now automatically registered if
+  installed.
+
 Version 1.0.5 (released 2018-12-05)
 
 - Add health check view
