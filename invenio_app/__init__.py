@@ -110,6 +110,7 @@ involve:
 
 - daemonizing the applications
 - setting instance specific configuration (e.g. database hostname)
+- securing your instance
 
 Daemonizing the applications
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -142,6 +143,17 @@ The instance path is defined by the environment variable
 ``INVENIO_INSTANCE_PATH`` or if not set defaults to
 ``<sys.prefix>/var/instance/`` where <sys.prefix> is your Python root prefix
 (e.g. ``/usr/``)
+
+Securing your instance
+~~~~~~~~~~~~~~~~~~~~~~
+The Invenio `documentation <https://invenio.readthedocs.io/en/latest/
+deployment/securing-your-instance.html>`_ explains in details how to secure
+an Invenio instance. It is important to note that if you deploy your
+Invenio instance with at least one reverse proxy in front of it,
+then you will have to set the configuration variable `WSGI_PROXIES
+<https://invenio.readthedocs.io/en/latest/deployment/
+securing-your-instance.html#number-of-proxies>`_
+accordingly to correctly handle the `X-Forwarded-*` headers.
 
 Templates and static files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
