@@ -48,10 +48,10 @@ def test_trusted_hosts():
         res = client.get('/', headers={'Host': 'www.example.org'})
         assert res.status_code == 200
 
-    # Make sure X-Forwarded-Host can be used as well.
-    with app.test_client() as client:
-        res = client.get('/', headers={
-            'Host': 'example.org',
-            'X-Forwarded-Host': 'attacker.org'
-        })
-        assert res.status_code == 400
+# There used to be a test here checking if the X-Forwarded-Host
+#  is checked as well. It was deleted because from werkzeug 0.15.0 onwards
+#  this check is not supported and therefore it caused the test to fail.
+#  New way of dealing with proxies in werkzeug is `ProxyFix
+#  <https://werkzeug.palletsprojects.com/en/0.15.x/middleware/proxy_fix`_.
+#  The change in werkzeug mentioned above is visible in this
+# `PR <https://github.com/pallets/werkzeug/pull/1303/files>`_.
