@@ -15,11 +15,16 @@ import logging
 import pkg_resources
 from flask import Blueprint, g, request
 from flask_limiter import Limiter
-from flask_limiter.util import get_ipaddr
 from flask_talisman import Talisman
 from werkzeug.utils import import_string
 
 from . import config
+from .helpers import obj_or_import_string
+
+
+def limit_with_ua_and_ip():
+    """Create key for the rate limiting."""
+    return str(request.user_agent) + request.remote_addr
 
 
 class InvenioApp(object):
@@ -44,13 +49,24 @@ class InvenioApp(object):
         """
         # Init the configuration
         self.init_config(app)
-        # Enable Rate limiter
-        self.limiter = Limiter(app, key_func=get_ipaddr)
+
         # Enable secure HTTP headers
         if app.config['APP_ENABLE_SECURE_HEADERS']:
             self.talisman = Talisman(
                 app, **app.config.get('APP_DEFAULT_SECURE_HEADERS', {})
             )
+
+        # Enable Rate limiter
+        # Flask limiter needs to be initialised after talisman, since if the
+        # talisman preprocessor doesn't run you will get an error on it's
+        # afterprocessor.
+        self.limiter = Limiter(
+            app,
+            key_func=obj_or_import_string(
+                app.config.get('RATELIMIT_KEY_FUNC'),
+                default=limit_with_ua_and_ip)
+        )
+
         # Enable PING view
         if app.config['APP_HEALTH_BLUEPRINT_ENABLED']:
             blueprint = Blueprint('invenio_app_ping', __name__)

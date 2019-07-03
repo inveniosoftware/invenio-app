@@ -34,6 +34,16 @@ RATELIMIT_HEADERS_ENABLED = True
    configuration.
 """
 
+RATELIMIT_KEY_FUNC = None
+"""Define custom key function.
+
+    This config is not part of Flask-Limiter.
+    It is passed to the constructor as the global ``key_func``.
+    To better understand the purpose of this function more information is
+    provided `here
+    <https://flask-limiter.readthedocs.io/en/stable/#rate-limit-domain>`_
+"""
+
 APP_ENABLE_SECURE_HEADERS = True
 """Enable Secure Headers. (Default: ``True``)
 
