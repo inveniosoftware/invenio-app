@@ -18,7 +18,7 @@ For more information, please also see
 websites.
 """
 
-RATELIMIT_DEFAULT = '5000/hour'
+RATELIMIT_APPLICATION = '5000/hour'
 """Default rate limit.
 
 .. note:: Overwrite

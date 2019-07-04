@@ -26,7 +26,7 @@ def test_rate_secure_headers(app):
 
 def test_headers(app):
     """Test headers."""
-    app.config['RATELIMIT_DEFAULT'] = '1/day'
+    app.config['RATELIMIT_APPLICATION'] = '1/day'
     app.config['RATELIMIT_STORAGE_URL'] = 'memory://'
     ext = InvenioApp(app)
 
@@ -55,7 +55,7 @@ def test_headers(app):
         assert res.headers['X-RateLimit-Reset']
 
         res = client.get('/avengers')
-        assert res.status_code == 200
+        assert res.status_code == 429
         assert res.headers['X-Content-Security-Policy']
         assert res.headers['X-Content-Type-Options']
         assert res.headers['X-Frame-Options']
