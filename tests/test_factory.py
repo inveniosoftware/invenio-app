@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2017-2018 CERN.
+# Copyright (C) 2017-2019 CERN.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -10,7 +10,7 @@
 
 from __future__ import absolute_import, print_function
 
-from flask import request
+from flask import request, url_for
 
 from invenio_app.factory import create_ui
 
@@ -34,19 +34,24 @@ def test_trusted_hosts():
         APP_ENABLE_SECURE_HEADERS=False,
     )
 
-    @app.route('/')
-    def index():
+    @app.route('/host')
+    def index_host():
         return request.host
 
+    @app.route('/url-for')
+    def index_url():
+        return url_for('index_url', _external=True)
+
     with app.test_client() as client:
-        res = client.get('/', headers={'Host': 'attacker.org'})
-        assert res.status_code == 400
+        for u in ['/host', '/url-for']:
+            res = client.get(u, headers={'Host': 'attacker.org'})
+            assert res.status_code == 400
 
-        res = client.get('/', headers={'Host': 'example.org'})
-        assert res.status_code == 200
+            res = client.get(u, headers={'Host': 'example.org'})
+            assert res.status_code == 200
 
-        res = client.get('/', headers={'Host': 'www.example.org'})
-        assert res.status_code == 200
+            res = client.get(u, headers={'Host': 'www.example.org'})
+            assert res.status_code == 200
 
 # There used to be a test here checking if the X-Forwarded-Host
 #  is checked as well. It was deleted because from werkzeug 0.15.0 onwards

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2017-2018 CERN.
+# Copyright (C) 2017-2019 CERN.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -81,6 +81,13 @@ class InvenioApp(object):
             app.extensions['flask-debugtoolbar'] = DebugToolbarExtension(app)
         except ImportError:
             app.logger.debug('Flask-DebugToolbar extension not installed.')
+
+        # Force host header check (by evaluating request.host) in order to make
+        # Werkzeugs trusted host feature work properly.
+        if app.config['APP_ALLOWED_HOSTS']:
+            @app.before_request
+            def before_request():
+                request.host
 
         # Register self
         app.extensions['invenio-app'] = self
