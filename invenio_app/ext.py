@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2017-2018 CERN.
+# Copyright (C) 2017-2019 CERN.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -13,7 +13,7 @@ from __future__ import absolute_import, print_function
 import logging
 
 import pkg_resources
-from flask import Blueprint
+from flask import Blueprint, request
 from flask_limiter import Limiter
 from flask_limiter.util import get_ipaddr
 from flask_talisman import Talisman
@@ -63,6 +63,13 @@ class InvenioApp(object):
             ping.talisman_view_options = {'force_https': False}
 
             app.register_blueprint(blueprint)
+
+        # Force host header check (by evaluating request.host) in order to make
+        # Werkzeugs trusted host feature work properly.
+        if app.config['APP_ALLOWED_HOSTS']:
+            @app.before_request
+            def before_request():
+                request.host
 
         # Register self
         app.extensions['invenio-app'] = self
