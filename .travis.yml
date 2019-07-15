@@ -56,6 +56,6 @@ deploy:
   distributions: "sdist bdist_wheel"
   on:
     tags: true
-    python: "2.7"
+    python: "3.5"
     repo: inveniosoftware/invenio-app
     condition: $DEPLOY = true
