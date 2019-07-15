@@ -7,6 +7,20 @@
 
 Changes
 =======
+Version 1.0.6 (released 2019-07-15)
+
+- Fixes a security issue where APP_ALLOWED_HOSTS was not always being checked,
+  and thus could allow host header injection attacks.
+
+  NOTE: you should never route requests to your application with a wrong host
+  header. The APP_ALLOWED_HOSTS exists as an extra protective measure, because
+  it is easy to misconfigure your web server.
+
+  The root cause was that Werkzeug's trusted host feature only works when
+  request.host is being evaluated. This means that for instance when only
+  url_for (part of the routing system) is used, then the host header check is
+  not performed.
+
 Version 1.0.5 (released 2018-12-05)
 
 - Add health check view
