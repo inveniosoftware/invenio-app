@@ -37,3 +37,9 @@ CLI application factory
 
 .. automodule:: invenio_app.cli
     :members:
+
+Flask limiter functions
+-----------------------
+
+.. automodule:: invenio_app.limiter
+    :members:

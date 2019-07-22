@@ -18,17 +18,18 @@ history = open('CHANGES.rst').read()
 tests_require = [
     'check-manifest>=0.25',
     'coverage>=4.5.3',
-    'isort>=4.2.2',
+    'isort>=4.3.21',
     'pydocstyle>=3.0.0',
     'pytest-cov>=2.7.1',
     'pytest-pep8>=1.0.6',
     'pytest>=4.6.4,<5.0.0',
     'redis>=2.10.5',
+    'mock>=2.0.0',
 ]
 
 extras_require = {
     'docs': [
-        'Sphinx>=1.5.6,<1.6',
+        'Sphinx>=1.8.0',
     ],
     'tests': tests_require,
 }
@@ -43,7 +44,7 @@ setup_requires = [
 
 install_requires = [
     'flask-celeryext>=0.2.2',
-    'flask-limiter>=0.9.4',
+    'flask-limiter>=1.0.1',
     'flask-shell-ipython>=0.3.1',
     'flask-talisman>=0.3.2,<0.5.1',
     'invenio-base>=1.0.0,<1.1.0',

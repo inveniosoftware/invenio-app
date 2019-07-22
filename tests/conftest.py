@@ -10,10 +10,30 @@
 
 from __future__ import absolute_import, print_function
 
+import imp
+import sys
+from collections import namedtuple
+
 import pytest
 from flask import Flask
+from flask import current_app as flask_current_app
+from flask import g
+from flask_limiter import Limiter
+from mock import patch
+from pkg_resources import Distribution
 
-from invenio_app.config import APP_DEFAULT_SECURE_HEADERS
+from invenio_app import InvenioApp
+from invenio_app.config import APP_DEFAULT_SECURE_HEADERS, set_rate_limit
+from invenio_app.ext import useragent_and_ip_limit_key
+from invenio_app.helpers import obj_or_import_string
+
+
+def wrap_rate_limit():
+    """Wrap rate limiter function to avoid affecting other tests."""
+    if flask_current_app.config['USE_FLASK_LIMITER']:
+        return set_rate_limit()
+    else:
+        return "1000 per second"
 
 
 @pytest.fixture()
@@ -21,8 +41,14 @@ def base_app():
     """Flask application fixture."""
     app_ = Flask('testapp')
     app_.config.update(
+        USE_FLASK_LIMITER=False,
         SECRET_KEY='SECRET_KEY',
         TESTING=True,
+        RATELIMIT_APPLICATION=wrap_rate_limit,
+        RATELIMIT_GUEST_USER='2 per second',
+        RATELIMIT_AUTHENTICATED_USER='5 per second',
+        RATELIMIT_PER_ENDPOINT={'unlimited_rate': '200 per second'},
+        RATELIMIT_HEADERS_ENABLED=True
     )
     app_.config['APP_DEFAULT_SECURE_HEADERS'] = APP_DEFAULT_SECURE_HEADERS
     app_.config['APP_DEFAULT_SECURE_HEADERS']['force_https'] = False
@@ -32,6 +58,20 @@ def base_app():
         from flask import g  # Prevent pytest problems
         return g.request_id if g and hasattr(g, 'request_id') else ''
 
+    @app_.route('/limited_rate')
+    def limited_rate():
+        return 'test'
+
+    @app_.route('/unlimited_rate')
+    def unlimited_rate():
+        return 'test'
+
+    Limiter(
+            app_,
+            key_func=obj_or_import_string(
+                app_.config.get('RATELIMIT_KEY_FUNC'),
+                default=useragent_and_ip_limit_key)
+        )
     return app_
 
 
@@ -74,3 +114,34 @@ def wsgi_apps():
         wsgi_factory=wsgi_proxyfix(create_wsgi_factory({'/api': create_api})),
     )
     return create_app, create_ui, create_api
+
+
+@pytest.fixture
+def use_flask_limiter(app):
+    """Activate flask limiter."""
+    flask_current_app.config['USE_FLASK_LIMITER'] = True
+    yield
+    flask_current_app.config['USE_FLASK_LIMITER'] = False
+
+
+@pytest.fixture()
+def create_mocked_flask_security_with_user_init():
+    """Create a function initializing flask security with a user."""
+    def mocked_flask_security(user):
+        """Add mocked flask-security."""
+        module_name = 'flask_security'
+        test_api_module = imp.new_module(module_name)
+        test_api_module.current_user = \
+            namedtuple("User", user.keys())(*user.values())
+        sys.modules[module_name] = test_api_module
+        return test_api_module
+    return mocked_flask_security
+
+
+@pytest.fixture()
+def push_rate_limit_to_context():
+    """Push a custom rate limit to the Flask global context."""
+    user_id = 1111
+    custom_rate_limit = '10 per second'
+    setattr(g, 'rate_limit_for:'+str(user_id), custom_rate_limit)
+    return custom_rate_limit

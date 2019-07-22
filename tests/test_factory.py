@@ -32,6 +32,7 @@ def test_trusted_hosts():
     app = create_ui(
         APP_ALLOWED_HOSTS=['example.org', 'www.example.org'],
         APP_ENABLE_SECURE_HEADERS=False,
+        RATELIMIT_ENABLED=False
     )
 
     @app.route('/host')
