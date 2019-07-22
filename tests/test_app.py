@@ -24,10 +24,9 @@ def test_rate_secure_headers(app):
     assert 'talisman' not in app.extensions
 
 
-def test_headers(app):
+def test_headers(use_flask_limiter, app):
     """Test headers."""
     app.config['RATELIMIT_APPLICATION'] = '1/day'
-    app.config['RATELIMIT_STORAGE_URL'] = 'memory://'
     ext = InvenioApp(app)
 
     for handler in app.logger.handlers:

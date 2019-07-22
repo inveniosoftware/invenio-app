@@ -18,13 +18,10 @@ from flask_limiter import Limiter
 from flask_talisman import Talisman
 from werkzeug.utils import import_string
 
+from invenio_app.limiter import useragent_and_ip_limit_key
+
 from . import config
 from .helpers import obj_or_import_string
-
-
-def limit_with_ua_and_ip():
-    """Create key for the rate limiting."""
-    return str(request.user_agent) + request.remote_addr
 
 
 class InvenioApp(object):
@@ -64,7 +61,7 @@ class InvenioApp(object):
             app,
             key_func=obj_or_import_string(
                 app.config.get('RATELIMIT_KEY_FUNC'),
-                default=limit_with_ua_and_ip)
+                default=useragent_and_ip_limit_key)
         )
 
         # Enable PING view

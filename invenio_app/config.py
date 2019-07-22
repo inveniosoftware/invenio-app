@@ -18,31 +18,76 @@ For more information, please also see
 websites.
 """
 
-RATELIMIT_APPLICATION = '5000/hour'
-"""Default rate limit.
+from __future__ import absolute_import, print_function, unicode_literals
 
-.. note:: Overwrite
-   Flask-Limiter <https://flask-limiter.readthedocs.io/en/stable/>`_
-   configuration.
+from invenio_app.limiter import set_rate_limit
+
+RATELIMIT_APPLICATION = set_rate_limit
+"""Global rate limit."""
+
+RATELIMIT_STRATEGY = 'moving-window'
+"""The rate limiting strategy to use.
+
+The strategy used here is the most consistant but also expensive one.
+If you are experiencing performance issues due to the increased Redis
+traffic, you can replace it with another one from the following
+`Flask-Limiter strategies
+<https://flask-limiter.readthedocs.io/en/stable/#ratelimit-strategy>`_.
 """
 
 RATELIMIT_HEADERS_ENABLED = True
-"""Enable rate limit headers. (Default: ``True``)
+"""Enable rate limit headers. (Default: ``True``)"""
 
-.. note:: Overwrite
-   Flask-Limiter <https://flask-limiter.readthedocs.io/en/stable/>`_
-   configuration.
+RATELIMIT_STORAGE_URL = 'memory://'
+"""Storage backend to store rate-limiting information.
+
+    Memory is used by default if no value is provided.
+    For more information regarding the mentioned above configuration values and
+    their available options you can see the `Flask-Limiter configuration
+    <https://flask-limiter.readthedocs.io/en/stable/#configuration>`_.
+
+.. note::
+
+   Provide your Redis URL if you are rate limiting a multithreaded application.
+
 """
 
 RATELIMIT_KEY_FUNC = None
 """Define custom key function.
 
-    This config is not part of Flask-Limiter.
-    It is passed to the constructor as the global ``key_func``.
-    To better understand the purpose of this function more information is
-    provided `here
-    <https://flask-limiter.readthedocs.io/en/stable/#rate-limit-domain>`_
+This config is not part of Flask-Limiter.
+
+This function is used to generate a unique key for each visitor to track
+the number of performed requests. If not defined, the default ``key_func``
+will be used, which will create the key by concatenating the user agent and
+the IP address of the user.
+
+For more information you can also see `here
+<https://flask-limiter.readthedocs.io/en/stable/#rate-limit-domain>`_
 """
+
+RATELIMIT_PER_ENDPOINT = {}
+"""Specifically defined Flask rate limits per endpoint.
+
+This config is not part of Flask-Limiter.
+Use this for endpoints that need to be *whitelisted*, providing the Flask
+blueprint path accompanied by a `rate limit value
+<https://flask-limiter.readthedocs.io/en/stable/#rate-limit-string-notation>`_.
+
+.. code-block:: python
+
+    RATELIMIT_PER_ENDPOINT = \
+    {
+        'zenodo_frontpage.index': '10 per second',
+        'security.login': '10 per second'
+    }
+"""
+
+RATELIMIT_AUTHENTICATED_USER = '5000 per hour;100 per minute'
+"""Rate limit for logged in users."""
+
+RATELIMIT_GUEST_USER = '1000 per hour;60 per minute'
+"""Rate limit for non logged in users."""
 
 APP_ENABLE_SECURE_HEADERS = True
 """Enable Secure Headers. (Default: ``True``)
