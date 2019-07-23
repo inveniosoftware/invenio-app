@@ -47,7 +47,7 @@ install_requires = [
     'flask-limiter>=1.0.1',
     'flask-shell-ipython>=0.3.1',
     'flask-talisman>=0.3.2,<0.5.1',
-    'invenio-base>=1.0.0,<1.1.0',
+    'invenio-base>=1.1.0,<1.2.0',
     'invenio-cache>=1.0.0,<1.1.0',
     'invenio-config>=1.0.0,<1.1.0',
 ]

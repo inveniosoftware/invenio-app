@@ -28,21 +28,25 @@ invenio_config_loader = create_config_loader(
     config=None, env_prefix=env_prefix
 )
 
-instance_path = os.getenv(env_prefix + '_INSTANCE_PATH') or \
-    os.path.join(sys.prefix, 'var', 'instance')
-"""Instance path for Invenio.
 
-Defaults to ``<env_prefix>_INSTANCE_PATH`` or if environment variable is not
-set ``<sys.prefix>/var/instance``.
-"""
+def instance_path():
+    """Instance path for Invenio.
 
-static_folder = os.getenv(env_prefix + '_STATIC_FOLDER') or \
-    os.path.join(instance_path, 'static')
-"""Static folder path.
+    Defaults to ``<env_prefix>_INSTANCE_PATH``
+     or if environment variable is not set ``<sys.prefix>/var/instance``.
+    """
+    return os.getenv(env_prefix + '_INSTANCE_PATH') or \
+        os.path.join(sys.prefix, 'var', 'instance')
 
-Defaults to ``<env_prefix>_STATIC_FOLDER`` or if environment variable is not
-set ``<sys.prefix>/var/instance/static``.
-"""
+
+def static_folder():
+    """Static folder path.
+
+    Defaults to ``<env_prefix>_STATIC_FOLDER``
+    or if environment variable is not set ``<sys.prefix>/var/instance/static``.
+    """
+    return os.getenv(env_prefix + '_STATIC_FOLDER') or \
+        os.path.join(instance_path(), 'static')
 
 
 def config_loader(app, **kwargs_config):
