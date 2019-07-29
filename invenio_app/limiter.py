@@ -58,6 +58,7 @@ def set_rate_limit():
         user = None
     if user and user.is_authenticated:
         return g.get(
-            'rate_limit_for:'+user.id,
-            current_app.config['RATELIMIT_AUTHENTICATED_USER'])
+            'user_rate_limit',
+            current_app.config['RATELIMIT_AUTHENTICATED_USER']
+        )
     return current_app.config['RATELIMIT_GUEST_USER']

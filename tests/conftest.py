@@ -141,7 +141,6 @@ def create_mocked_flask_security_with_user_init():
 @pytest.fixture()
 def push_rate_limit_to_context():
     """Push a custom rate limit to the Flask global context."""
-    user_id = 1111
     custom_rate_limit = '10 per second'
-    setattr(g, 'rate_limit_for:'+str(user_id), custom_rate_limit)
+    setattr(g, 'user_rate_limit', custom_rate_limit)
     return custom_rate_limit
