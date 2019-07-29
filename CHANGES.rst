@@ -7,6 +7,14 @@
 
 Changes
 =======
+Version 1.2.0 (released 2019-07-29)
+
+- Fixes issue with instance_path and static_folder being globals. Depends on
+  change in Invenio-Base v1.1.0
+
+- Improves rate limiting function to have limits per guest and per
+  authenticated users.
+
 Version 1.1.1 (released 2019-07-15)
 
 - Fixes a security issue where APP_ALLOWED_HOSTS was not always being checked,
