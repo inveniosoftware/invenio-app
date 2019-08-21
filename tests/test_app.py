@@ -118,6 +118,18 @@ def test_default_health_blueprint(app):
         assert res.status_code == 200
 
 
+def test_ping_exempt_from_rate_limiting(app):
+    app.config['APP_HEALTH_BLUEPRINT_ENABLED'] = True
+    app.config['RATELIMIT_APPLICATION'] = '1/day'
+    # Initialize the app
+    InvenioApp(app)
+    with app.test_client() as client:
+        res = client.get('/ping')
+        assert res.status_code == 200
+        res = client.get('/ping')
+        assert res.status_code == 200
+
+
 def test_requestid(base_app):
     """Test extraction of header id."""
     InvenioApp(base_app)
