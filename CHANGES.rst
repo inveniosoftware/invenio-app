@@ -1,12 +1,17 @@
 ..
     This file is part of Invenio.
-    Copyright (C) 2017-2018 CERN.
+    Copyright (C) 2017-2019 CERN.
 
     Invenio is free software; you can redistribute it and/or modify it
     under the terms of the MIT License; see LICENSE file for more details.
 
 Changes
 =======
+
+Version 1.2.1 (released 2019-08-21)
+
+- Exempts the "/ping" view from rate limiting.
+
 Version 1.2.0 (released 2019-07-29)
 
 - Fixes issue with instance_path and static_folder being globals. Depends on
