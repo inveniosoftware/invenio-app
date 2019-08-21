@@ -67,8 +67,10 @@ class InvenioApp(object):
         # Enable PING view
         if app.config['APP_HEALTH_BLUEPRINT_ENABLED']:
             blueprint = Blueprint('invenio_app_ping', __name__)
+            limiter = self.limiter
 
             @blueprint.route('/ping')
+            @limiter.exempt
             def ping():
                 """Load balancer ping view."""
                 return 'OK'
