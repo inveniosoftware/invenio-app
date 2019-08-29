@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 1.2.2 (released 2019-08-29)
+
+- Unpins Invenio packages versions.
+
 Version 1.2.1 (released 2019-08-21)
 
 - Exempts the "/ping" view from rate limiting.
