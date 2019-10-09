@@ -28,27 +28,13 @@ from invenio_app.ext import useragent_and_ip_limit_key
 from invenio_app.helpers import obj_or_import_string
 
 
-def wrap_rate_limit():
-    """Wrap rate limiter function to avoid affecting other tests."""
-    if flask_current_app.config['USE_FLASK_LIMITER']:
-        return set_rate_limit()
-    else:
-        return "1000 per second"
-
-
 @pytest.fixture()
 def base_app():
     """Flask application fixture."""
     app_ = Flask('testapp')
     app_.config.update(
-        USE_FLASK_LIMITER=False,
         SECRET_KEY='SECRET_KEY',
         TESTING=True,
-        RATELIMIT_APPLICATION=wrap_rate_limit,
-        RATELIMIT_GUEST_USER='2 per second',
-        RATELIMIT_AUTHENTICATED_USER='5 per second',
-        RATELIMIT_PER_ENDPOINT={'unlimited_rate': '200 per second'},
-        RATELIMIT_HEADERS_ENABLED=True
     )
     app_.config['APP_DEFAULT_SECURE_HEADERS'] = APP_DEFAULT_SECURE_HEADERS
     app_.config['APP_DEFAULT_SECURE_HEADERS']['force_https'] = False
@@ -66,18 +52,32 @@ def base_app():
     def unlimited_rate():
         return 'test'
 
-    Limiter(
-            app_,
-            key_func=obj_or_import_string(
-                app_.config.get('RATELIMIT_KEY_FUNC'),
-                default=useragent_and_ip_limit_key)
-        )
     return app_
+
+
+@pytest.fixture()
+def app_with_no_limiter(base_app):
+    """Flask application fixture without limiter registered."""
+    with base_app.app_context():
+        yield base_app
 
 
 @pytest.yield_fixture()
 def app(base_app):
     """Flask application fixture."""
+    base_app.config.update(
+        RATELIMIT_APPLICATION=set_rate_limit,
+        RATELIMIT_GUEST_USER='2 per second',
+        RATELIMIT_AUTHENTICATED_USER='5 per second',
+        RATELIMIT_PER_ENDPOINT={'unlimited_rate': '200 per second'},
+        RATELIMIT_HEADERS_ENABLED=True
+    )
+    Limiter(
+        base_app,
+        key_func=obj_or_import_string(
+            base_app.config.get('RATELIMIT_KEY_FUNC'),
+            default=useragent_and_ip_limit_key)
+    )
     with base_app.app_context():
         yield base_app
 
@@ -114,14 +114,6 @@ def wsgi_apps():
         wsgi_factory=wsgi_proxyfix(create_wsgi_factory({'/api': create_api})),
     )
     return create_app, create_ui, create_api
-
-
-@pytest.fixture
-def use_flask_limiter(app):
-    """Activate flask limiter."""
-    flask_current_app.config['USE_FLASK_LIMITER'] = True
-    yield
-    flask_current_app.config['USE_FLASK_LIMITER'] = False
 
 
 @pytest.fixture()
