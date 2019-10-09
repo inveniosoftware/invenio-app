@@ -26,7 +26,7 @@ def exhaust_and_test_rate_limit_per_second(client, rate_to_exhaust):
         ).status_code
 
 
-def test_limiter(use_flask_limiter, app):
+def test_limiter(app):
     """Test the Flask limiter function."""
     with app.test_client() as client:
         exhaust_and_test_rate_limit_per_second(
@@ -43,7 +43,7 @@ def test_limiter(use_flask_limiter, app):
 
 
 def test_limiter_for_authenticated_user(
-        use_flask_limiter, app, create_mocked_flask_security_with_user_init):
+        app, create_mocked_flask_security_with_user_init):
     """Test the Flask limiter function."""
     init_mocked_flask_security_with_user = \
         create_mocked_flask_security_with_user_init
@@ -64,7 +64,7 @@ def test_limiter_for_authenticated_user(
 
 
 def test_limiter_for_privileged_user(
-        use_flask_limiter, app, create_mocked_flask_security_with_user_init,
+        app, create_mocked_flask_security_with_user_init,
         push_rate_limit_to_context):
     """Test the Flask limiter function."""
     init_mocked_flask_security_with_user = \

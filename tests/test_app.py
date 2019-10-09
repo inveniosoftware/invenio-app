@@ -24,23 +24,23 @@ def test_rate_secure_headers(app):
     assert 'talisman' not in app.extensions
 
 
-def test_headers(use_flask_limiter, app):
+def test_headers(app_with_no_limiter):
     """Test headers."""
-    app.config['RATELIMIT_APPLICATION'] = '1/day'
-    ext = InvenioApp(app)
+    app_with_no_limiter.config['RATELIMIT_APPLICATION'] = '1/day'
+    ext = InvenioApp(app_with_no_limiter)
 
-    for handler in app.logger.handlers:
+    for handler in app_with_no_limiter.logger.handlers:
         ext.limiter.logger.addHandler(handler)
 
-    @app.route('/jessica_jones')
+    @app_with_no_limiter.route('/jessica_jones')
     def jessica_jones():
         return 'jessica jones'
 
-    @app.route('/avengers')
+    @app_with_no_limiter.route('/avengers')
     def avengers():
         return 'infinity war'
 
-    with app.test_client() as client:
+    with app_with_no_limiter.test_client() as client:
         res = client.get('/jessica_jones')
         assert res.status_code == 200
         assert res.headers['X-RateLimit-Limit'] == '1'
@@ -118,12 +118,12 @@ def test_default_health_blueprint(app):
         assert res.status_code == 200
 
 
-def test_ping_exempt_from_rate_limiting(app):
-    app.config['APP_HEALTH_BLUEPRINT_ENABLED'] = True
-    app.config['RATELIMIT_APPLICATION'] = '1/day'
+def test_ping_exempt_from_rate_limiting(app_with_no_limiter):
+    app_with_no_limiter.config['APP_HEALTH_BLUEPRINT_ENABLED'] = True
+    app_with_no_limiter.config['RATELIMIT_APPLICATION'] = '1/day'
     # Initialize the app
-    InvenioApp(app)
-    with app.test_client() as client:
+    InvenioApp(app_with_no_limiter)
+    with app_with_no_limiter.test_client() as client:
         res = client.get('/ping')
         assert res.status_code == 200
         res = client.get('/ping')

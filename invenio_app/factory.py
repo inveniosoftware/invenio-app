@@ -49,6 +49,15 @@ def static_folder():
         os.path.join(instance_path(), 'static')
 
 
+def static_url_path():
+    """Static url path.
+
+    Defaults to ``<env_prefix>_STATIC_URL_PATH``
+    or if environment variable is not set ``/static``.
+    """
+    return os.getenv(env_prefix + '_STATIC_URL_PATH') or '/static'
+
+
 def config_loader(app, **kwargs_config):
     """Configuration loader.
 
@@ -119,6 +128,7 @@ create_ui = create_app_factory(
     wsgi_factory=wsgi_proxyfix(),
     instance_path=instance_path,
     static_folder=static_folder,
+    static_url_path=static_url_path(),
     app_class=app_class(),
 )
 """Flask application factory for Invenio UI."""
@@ -132,6 +142,7 @@ create_app = create_app_factory(
     wsgi_factory=wsgi_proxyfix(create_wsgi_factory({'/api': create_api})),
     instance_path=instance_path,
     static_folder=static_folder,
+    static_url_path=static_url_path(),
     app_class=app_class(),
 )
 """Flask application factory for combined UI + REST API.
