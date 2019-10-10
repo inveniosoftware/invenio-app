@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 1.2.3 (released 2019-10-10)
+
+- Make `static_url_path` configurable through environment variable.
+
 Version 1.2.2 (released 2019-08-29)
 
 - Unpins Invenio packages versions.
