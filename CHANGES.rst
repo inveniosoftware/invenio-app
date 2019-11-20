@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 1.2.4 (released 2019-11-20)
+
+- Disable ratelimit for celery.
+
 Version 1.2.3 (released 2019-10-10)
 
 - Make `static_url_path` configurable through environment variable.
