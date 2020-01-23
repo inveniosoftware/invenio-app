@@ -50,6 +50,7 @@ install_requires = [
     'invenio-base>=1.1.0',
     'invenio-cache>=1.0.0',
     'invenio-config>=1.0.0',
+    'uritools>=1.0.1',
 ]
 
 packages = find_packages()
