@@ -66,6 +66,7 @@ def app_with_no_limiter(base_app):
 def app(base_app):
     """Flask application fixture."""
     base_app.config.update(
+        APP_ALLOWED_HOSTS=['localhost'],
         RATELIMIT_APPLICATION=set_rate_limit,
         RATELIMIT_GUEST_USER='2 per second',
         RATELIMIT_AUTHENTICATED_USER='5 per second',
