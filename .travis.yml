@@ -23,12 +23,13 @@ cache:
 
 env:
   - REQUIREMENTS=lowest
-  - REQUIREMENTS=release DEPLOY=true
+  - REQUIREMENTS=release
   - REQUIREMENTS=devel
 
 python:
-  - "2.7"
-  - "3.5"
+  - "3.6"
+  - "3.7"
+  - "3.8"
 
 before_install:
   - "nvm install 6; nvm use 6"
@@ -56,6 +57,4 @@ deploy:
   distributions: "sdist bdist_wheel"
   on:
     tags: true
-    python: "3.5"
-    repo: inveniosoftware/invenio-app
-    condition: $DEPLOY = true
+  skip_existing: true
