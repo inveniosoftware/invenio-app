@@ -50,6 +50,7 @@ install_requires = [
     'invenio-base>=1.1.0',
     'invenio-cache>=1.0.0',
     'invenio-config>=1.0.0',
+    'six>=1.12.0',
     'uritools>=1.0.1',
 ]
 
@@ -102,7 +103,6 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
         'Development Status :: 5 - Production/Stable',
     ],
 )
