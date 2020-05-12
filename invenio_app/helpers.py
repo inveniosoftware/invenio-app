@@ -10,10 +10,13 @@
 
 from __future__ import absolute_import, print_function
 
+import os
+
 import six
 from flask import current_app, request
+from jinja2 import BaseLoader, TemplateNotFound
 from uritools import uricompose, urisplit
-from werkzeug.utils import import_string
+from werkzeug.utils import cached_property, import_string
 
 
 class TrustedHostsMixin(object):
@@ -44,6 +47,60 @@ def get_safe_redirect_target(arg='next', _target=None):
                     query=redirect_uri.query,
                     fragment=redirect_uri.fragment)
     return None
+
+
+class ThemeJinjaLoader(BaseLoader):
+    """Prefix template loader.
+
+    This loader acts as a wrapper for any type of Jinja loader. Before doing a
+    template lookup, the loader sequentially applies prefixes to the template
+    name, until a template source is found.
+
+    The prefixes are defined via the ``APP_THEME`` configuration variable.
+    """
+
+    def __init__(self, app, loader):
+        """Initialize loader.
+
+        :param app: Flask application.
+        :param loader: Jinja loader to be wrapped.
+        """
+        self.app = app
+        self.loader = loader
+
+    @cached_property
+    def prefixes(self):
+        """Return the active prefixes to be used for template lookup."""
+        theme = self.app.config.get('APP_THEME', [])
+        if isinstance(theme, str):
+            theme = [theme]
+        return theme
+
+    def _prefixed_templates(self, name):
+        template_names = [os.path.join(p, name) for p in self.prefixes]
+        return template_names + [name]
+
+    def get_source(self, environment, template):
+        """Get the template source, filename and reload helper."""
+        for tpl in self._prefixed_templates(template):
+            try:
+                return self.loader.get_source(environment, tpl)
+            except TemplateNotFound:
+                pass
+        raise TemplateNotFound(template)
+
+    def load(self, environment, name, globals=None):
+        """Loads a template."""
+        for tpl in self._prefixed_templates(name):
+            try:
+                return self.loader.load(environment, tpl, globals)
+            except TemplateNotFound:
+                pass
+        raise TemplateNotFound(name)
+
+    def list_templates(self):
+        """List all availbale templates."""
+        return self.loader.list_templates()
 
 
 def obj_or_import_string(value, default=None):

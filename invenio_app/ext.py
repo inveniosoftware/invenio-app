@@ -21,7 +21,7 @@ from werkzeug.utils import import_string
 from invenio_app.limiter import useragent_and_ip_limit_key
 
 from . import config
-from .helpers import obj_or_import_string
+from .helpers import ThemeJinjaLoader, obj_or_import_string
 
 
 class InvenioApp(object):
@@ -103,6 +103,10 @@ class InvenioApp(object):
             @app.before_request
             def before_request():
                 request.host
+
+        # Add theme template loader
+        if app.config.get('APP_THEME'):
+            app.jinja_env.loader = ThemeJinjaLoader(app, app.jinja_env.loader)
 
         # Register self
         app.extensions['invenio-app'] = self

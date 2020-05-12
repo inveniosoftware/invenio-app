@@ -24,7 +24,7 @@ def test_version():
 def test_config_loader():
     """Test config loader."""
     app = create_ui()
-    assert 'cache_size' in app.jinja_options
+    assert app.jinja_env.cache_size == 1000
 
 
 def test_trusted_hosts():

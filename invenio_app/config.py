@@ -89,6 +89,21 @@ RATELIMIT_AUTHENTICATED_USER = '5000 per hour;100 per minute'
 RATELIMIT_GUEST_USER = '1000 per hour;60 per minute'
 """Rate limit for non logged in users."""
 
+APP_THEME = None
+"""Application-wide themes list used for template and assets lookup.
+
+The value is a list of theme strings applied in a fallback fashion in the order
+they are specified:
+
+.. code-block:: python
+
+    APP_THEME = ['my-overlay', 'semantic-ui']
+
+From the above example, templates and assets with the ``my-overlay`` prefix
+will be looked up first, and if not found the ``semantic-ui`` prefix will be
+used. If none of the lookups are successful, a non-prefixed lookup is done.
+"""
+
 APP_ENABLE_SECURE_HEADERS = True
 """Enable Secure Headers. (Default: ``True``)
 

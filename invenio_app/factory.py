@@ -18,7 +18,6 @@ from invenio_base.app import create_app_factory
 from invenio_base.wsgi import create_wsgi_factory, wsgi_proxyfix
 from invenio_cache import BytecodeCache
 from invenio_config import create_config_loader
-from jinja2 import ChoiceLoader, FileSystemLoader
 
 from .helpers import TrustedHostsMixin
 
@@ -59,29 +58,12 @@ def static_url_path():
 
 
 def config_loader(app, **kwargs_config):
-    """Configuration loader.
-
-    Adds support for loading templates from the Flask application's instance
-    folder (``<instance_folder>/templates``).
-    """
-    # This is the only place customize the Flask application right after
-    # it has been created, but before all extensions etc are loaded.
-    local_templates_path = os.path.join(app.instance_path, 'templates')
-    if os.path.exists(local_templates_path):
-        # Let's customize the template loader to look into packages
-        # and application templates folders.
-        app.jinja_loader = ChoiceLoader([
-            FileSystemLoader(local_templates_path),
-            app.jinja_loader,
-        ])
-
-    app.jinja_options = dict(
-        app.jinja_options,
-        cache_size=1000,
-        bytecode_cache=BytecodeCache(app)
-    )
-
+    """Configuration loader."""
     invenio_config_loader(app, **kwargs_config)
+
+    # TODO: Move this to invenio_cache.ext.InvenioCache.init_app
+    app.jinja_env.cache_size = 1000
+    app.jinja_env.bytecode_cache = BytecodeCache(app)
 
 
 def app_class():
@@ -115,6 +97,7 @@ create_api = create_app_factory(
     converter_entry_points=['invenio_base.api_converters'],
     wsgi_factory=wsgi_proxyfix(),
     instance_path=instance_path,
+    root_path=instance_path,
     app_class=app_class(),
 )
 """Flask application factory for Invenio REST API."""
@@ -128,6 +111,7 @@ create_ui = create_app_factory(
     wsgi_factory=wsgi_proxyfix(),
     instance_path=instance_path,
     static_folder=static_folder,
+    root_path=instance_path,
     static_url_path=static_url_path(),
     app_class=app_class(),
 )
@@ -142,6 +126,7 @@ create_app = create_app_factory(
     wsgi_factory=wsgi_proxyfix(create_wsgi_factory({'/api': create_api})),
     instance_path=instance_path,
     static_folder=static_folder,
+    root_path=instance_path,
     static_url_path=static_url_path(),
     app_class=app_class(),
 )
