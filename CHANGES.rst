@@ -8,6 +8,16 @@
 Changes
 =======
 
+Version 1.3.0 (released 2020-05-13)
+
+- Adds new template theming via allowing Jinja to load templates from different
+  theme folders via the new configuration variable ``APP_THEME``.
+
+- Removes the ChoiceLoader used to load templates from the instance folder in
+  favour of using Flask instead. Invenio-App sets the application's root_path
+  to the instance folder, which makes Flask create the same behavior
+  previously achieved with the ChoiceLoader.
+
 Version 1.2.6 (released 2020-05-06)
 
 - Deprecated Python versions lower than 3.6.0. Now supporting 3.6.0 and 3.7.0.
