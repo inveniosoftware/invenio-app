@@ -86,8 +86,8 @@ def app(base_app):
 @pytest.fixture()
 def wsgi_apps():
     """Wsgi app fixture."""
-    from invenio_base.wsgi import create_wsgi_factory, wsgi_proxyfix
     from invenio_base.app import create_app_factory
+    from invenio_base.wsgi import create_wsgi_factory, wsgi_proxyfix
 
     def _config(app, **kwargs):
         app.config.update(
