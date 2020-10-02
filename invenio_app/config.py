@@ -83,10 +83,10 @@ blueprint path accompanied by a `rate limit value
     }
 """
 
-RATELIMIT_AUTHENTICATED_USER = '5000 per hour;100 per minute'
+RATELIMIT_AUTHENTICATED_USER = '5000 per hour;150 per minute'
 """Rate limit for logged in users."""
 
-RATELIMIT_GUEST_USER = '1000 per hour;60 per minute'
+RATELIMIT_GUEST_USER = '1000 per hour;100 per minute'
 """Rate limit for non logged in users."""
 
 APP_THEME = None
