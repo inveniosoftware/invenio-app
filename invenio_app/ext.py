@@ -69,7 +69,7 @@ class InvenioApp(object):
             blueprint = Blueprint('invenio_app_ping', __name__)
             limiter = self.limiter
 
-            @blueprint.route('/ping')
+            @blueprint.route('/ping', methods=['HEAD', 'OPTIONS', 'GET'])
             @limiter.exempt
             def ping():
                 """Load balancer ping view."""
