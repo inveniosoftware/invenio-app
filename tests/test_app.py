@@ -128,6 +128,10 @@ def test_ping_exempt_from_rate_limiting(app_with_no_limiter):
         assert res.status_code == 200
         res = client.get('/ping')
         assert res.status_code == 200
+        res = client.head('/ping')
+        assert res.status_code == 200
+        res = client.options('/ping')
+        assert res.status_code == 200
 
 
 def test_requestid(base_app):
