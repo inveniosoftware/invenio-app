@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 1.2.7 (released 2020-10-07)
+
+- Change /ping endpoint to also accept OPTIONS and HEAD HTTP verbs.
+
 Version 1.2.6 (released 2020-05-06)
 
 - Deprecated Python versions lower than 3.6.0. Now supporting 3.6.0 and 3.7.0.
