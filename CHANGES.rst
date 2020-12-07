@@ -8,6 +8,11 @@
 Changes
 =======
 
+Version 1.3.1 (released 2020-12-07)
+
+- Adds HEAD and OPTIONS HTTP verbs to the /ping endpoint as recommended
+  in HAProxy documentation.
+
 Version 1.3.0 (released 2020-05-13)
 
 - Adds new template theming via allowing Jinja to load templates from different
