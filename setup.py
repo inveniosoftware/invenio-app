@@ -17,6 +17,7 @@ history = open('CHANGES.rst').read()
 
 tests_require = [
     'pytest-invenio>=1.4.0',
+    'iniconfig>=1.1.1',
     'redis>=2.10.5',
     'mock>=2.0.0',
 ]
