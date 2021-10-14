@@ -16,3 +16,4 @@ Contributors
 - Nikos Filippakis
 - Rémi Ducceschi
 - Tibor Simko
+- Maximilian Moser

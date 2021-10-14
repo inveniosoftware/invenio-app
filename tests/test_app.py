@@ -55,7 +55,6 @@ def test_headers(app_with_no_limiter):
 
         res = client.get('/avengers')
         assert res.status_code == 429
-        assert res.headers['X-Content-Security-Policy']
         assert res.headers['X-Content-Type-Options']
         assert res.headers['X-Frame-Options']
         assert res.headers['X-XSS-Protection']
@@ -82,9 +81,6 @@ def _test_csp_default_src(app, expect):
         assert res.status_code == 200
         assert _normalize_csp_header(
             res.headers.get('Content-Security-Policy')
-        ) == _normalize_csp_header(expect)
-        assert _normalize_csp_header(
-            res.headers.get('X-Content-Security-Policy')
         ) == _normalize_csp_header(expect)
 
 
