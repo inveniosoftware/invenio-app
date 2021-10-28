@@ -8,11 +8,8 @@
 
 """Helpers."""
 
-from __future__ import absolute_import, print_function
-
 import os
 
-import six
 from flask import current_app, request
 from jinja2 import BaseLoader, TemplateNotFound
 from uritools import uricompose, urisplit
@@ -110,7 +107,7 @@ def obj_or_import_string(value, default=None):
     :params default: Default object to return if the import fails.
     :returns: The imported object.
     """
-    if isinstance(value, six.string_types):
+    if isinstance(value, str):
         return import_string(value)
     elif value:
         return value

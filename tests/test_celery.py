@@ -8,9 +8,6 @@
 
 """Celery test."""
 
-from __future__ import absolute_import, print_function
-
-
 def test_celery():
     """Test celery application."""
     from invenio_app.celery import celery

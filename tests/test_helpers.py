@@ -8,10 +8,9 @@
 
 """Helper tests."""
 
-from __future__ import absolute_import, print_function
+from urllib.parse import quote_plus
 
 import pytest
-from six.moves.urllib.parse import quote_plus
 
 from invenio_app.helpers import get_safe_redirect_target
 

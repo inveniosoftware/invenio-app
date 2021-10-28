@@ -8,8 +8,6 @@
 
 """Pytest configuration."""
 
-from __future__ import absolute_import, print_function
-
 import imp
 import sys
 from collections import namedtuple

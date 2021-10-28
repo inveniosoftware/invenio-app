@@ -8,8 +8,6 @@
 
 """Flask Limiter functions."""
 
-from __future__ import absolute_import, print_function
-
 import pkg_resources
 from flask import current_app, g, request
 

@@ -8,11 +8,6 @@
 
 """Module tests."""
 
-from __future__ import absolute_import, print_function
-
-from flask import Flask
-from werkzeug.http import parse_options_header
-
 from invenio_app import InvenioApp
 
 

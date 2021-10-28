@@ -8,8 +8,6 @@
 
 """Module tests."""
 
-from __future__ import absolute_import, print_function
-
 from flask import request, url_for
 
 from invenio_app.factory import create_ui

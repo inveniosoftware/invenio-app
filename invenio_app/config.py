@@ -18,8 +18,6 @@ For more information, please also see
 websites.
 """
 
-from __future__ import absolute_import, print_function, unicode_literals
-
 from invenio_app.limiter import set_rate_limit
 
 RATELIMIT_APPLICATION = set_rate_limit

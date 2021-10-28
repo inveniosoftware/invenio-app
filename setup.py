@@ -45,7 +45,6 @@ install_requires = [
     'invenio-base>=1.2.3',
     'invenio-cache>=1.0.0',
     'invenio-config>=1.0.0',
-    'six>=1.12.0',
     'uritools>=1.0.1',
 ]
 

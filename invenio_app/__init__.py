@@ -167,8 +167,6 @@ better to provide them via an installabled Python package. Do take care not
 to overwrite any existing Invenio files.
 """
 
-from __future__ import absolute_import, print_function
-
 from .ext import InvenioApp
 from .version import __version__
 

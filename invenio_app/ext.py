@@ -8,15 +8,9 @@
 
 """Invenio app extension."""
 
-from __future__ import absolute_import, print_function
-
-import logging
-
-import pkg_resources
 from flask import Blueprint, g, request
 from flask_limiter import Limiter
 from flask_talisman import Talisman
-from werkzeug.utils import import_string
 
 from invenio_app.limiter import useragent_and_ip_limit_key
 

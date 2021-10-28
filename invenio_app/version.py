@@ -12,6 +12,4 @@ This file is imported by ``invenio_app.__init__``,
 and parsed by ``setup.py``.
 """
 
-from __future__ import absolute_import, print_function
-
 __version__ = '1.3.1'

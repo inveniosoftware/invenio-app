@@ -8,8 +8,6 @@
 
 """UI-only WSGI application for Invenio flavours."""
 
-from __future__ import absolute_import, print_function
-
 from .factory import create_ui
 
 #: WSGI application for Invenio UI.
