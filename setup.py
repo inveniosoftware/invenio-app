@@ -17,14 +17,13 @@ readme = open('README.rst').read()
 history = open('CHANGES.rst').read()
 
 tests_require = [
-    'pytest-invenio>=1.4.0',
+    'pytest-invenio>=1.4.2',
     'redis>=2.10.5',
-    'mock>=2.0.0',
 ]
 
 extras_require = {
     'docs': [
-        'Sphinx>=1.8.0',
+        'Sphinx==4.2.0',
     ],
     'tests': tests_require,
 }
@@ -33,9 +32,6 @@ extras_require['all'] = []
 for reqs in extras_require.values():
     extras_require['all'].extend(reqs)
 
-setup_requires = [
-    'pytest-runner>=2.6.2',
-]
 
 install_requires = [
     'flask-celeryext>=0.3.4',
@@ -84,7 +80,6 @@ setup(
     },
     extras_require=extras_require,
     install_requires=install_requires,
-    setup_requires=setup_requires,
     tests_require=tests_require,
     classifiers=[
         'Environment :: Web Environment',

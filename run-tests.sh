@@ -13,10 +13,9 @@ set -o errexit
 # Quit on unbound symbols
 set -o nounset
 
-export PYTEST_ADDOPTS='docs tests invenio_app'
-
-pydocstyle invenio_app tests docs
-isort invenio_app tests --check-only --diff
-check-manifest --ignore ".*-requirements.txt"
-sphinx-build -qnNW docs docs/_build/html
-python setup.py test
+python -m check_manifest --ignore ".*-requirements.txt"
+python -m sphinx.cmd.build -qnNW docs docs/_build/html
+python -m pytest
+tests_exit_code=$?
+python -m sphinx.cmd.build -qnNW -b doctest docs docs/_build/doctest
+exit "$tests_exit_code"

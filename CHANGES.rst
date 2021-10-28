@@ -8,6 +8,12 @@
 Changes
 =======
 
+Version 1.3.2 (released 2021-10-28)
+
+- Unpins Flask-Talisman to allow newer versions.
+
+- Removes Python 2 support.
+
 Version 1.3.1 (released 2020-12-07)
 
 - Adds HEAD and OPTIONS HTTP verbs to the /ping endpoint as recommended

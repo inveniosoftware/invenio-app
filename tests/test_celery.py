@@ -8,6 +8,7 @@
 
 """Celery test."""
 
+
 def test_celery():
     """Test celery application."""
     from invenio_app.celery import celery
