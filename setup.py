@@ -38,7 +38,7 @@ setup_requires = [
 ]
 
 install_requires = [
-    'flask-celeryext>=0.2.2',
+    'flask-celeryext>=0.3.4',
     'flask-limiter>=1.0.1,<1.2.0',
     'flask-shell-ipython>=0.3.1',
     'flask-talisman>=0.3.2,<1.0',
