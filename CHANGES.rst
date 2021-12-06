@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 1.3.3 (released 2021-12-06)
+
+- Pinned Limits library to align with Flask-Limiter.
+
 Version 1.3.2 (released 2021-10-28)
 
 - Unpins Flask-Talisman to allow newer versions.
