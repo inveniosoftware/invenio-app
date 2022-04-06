@@ -48,12 +48,19 @@ def set_rate_limit():
     if request.endpoint in endpoint_limits:
         # Case of whitelisted endpoint.
         return endpoint_limits[request.endpoint]
+
     try:
-        pkg_resources.get_distribution('flask_security')
+        pkg_resources.get_distribution('flask_security_invenio ')
         from flask_security import current_user
         user = current_user
     except pkg_resources.DistributionNotFound:
-        user = None
+        try:
+            pkg_resources.get_distribution('flask_security')
+            from flask_security import current_user
+            user = current_user
+        except pkg_resources.DistributionNotFound:
+            user = None
+
     if user and user.is_authenticated:
         return g.get(
             'user_rate_limit',
