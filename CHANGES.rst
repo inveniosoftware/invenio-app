@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 1.3.4 (released 2022-04-06)
+
+- Added support for Flask-Security-Invenio.
+
 Version 1.3.3 (released 2021-12-06)
 
 - Pinned Limits library to align with Flask-Limiter.
