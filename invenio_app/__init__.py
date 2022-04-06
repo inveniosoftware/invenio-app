@@ -168,6 +168,7 @@ to overwrite any existing Invenio files.
 """
 
 from .ext import InvenioApp
-from .version import __version__
+
+__version__ = '1.3.4'
 
 __all__ = ('__version__', 'InvenioApp', )
