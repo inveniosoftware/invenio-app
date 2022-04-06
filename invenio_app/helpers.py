@@ -33,16 +33,24 @@ def get_safe_redirect_target(arg='next', _target=None):
     :returns: The redirect target or ``None``.
     """
     for target in _target, request.args.get(arg), request.referrer:
-        if target:
-            redirect_uri = urisplit(target)
-            allowed_hosts = current_app.config.get('APP_ALLOWED_HOSTS', [])
-            if redirect_uri.host in allowed_hosts:
-                return target
-            elif redirect_uri.path:
-                return uricompose(
-                    path=redirect_uri.path,
-                    query=redirect_uri.query,
-                    fragment=redirect_uri.fragment)
+        redirect = safe_redirect(target)
+        if redirect:
+            return redirect
+    return None
+
+
+def safe_redirect(target):
+    """Ensure redirect is a local redirect."""
+    if target:
+        redirect_uri = urisplit(target)
+        allowed_hosts = current_app.config.get('APP_ALLOWED_HOSTS', [])
+        if redirect_uri.host in allowed_hosts:
+            return target
+        elif redirect_uri.path:
+            return uricompose(
+                path=redirect_uri.path,
+                query=redirect_uri.query,
+                fragment=redirect_uri.fragment)
     return None
 
 

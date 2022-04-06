@@ -15,7 +15,7 @@ from flask_talisman import Talisman
 from invenio_app.limiter import useragent_and_ip_limit_key
 
 from . import config
-from .helpers import ThemeJinjaLoader, obj_or_import_string
+from .helpers import ThemeJinjaLoader, obj_or_import_string, safe_redirect
 
 
 class InvenioApp(object):
@@ -46,6 +46,8 @@ class InvenioApp(object):
             self.talisman = Talisman(
                 app, **app.config.get('APP_DEFAULT_SECURE_HEADERS', {})
             )
+
+        app.jinja_env.filters['safe_redirect'] = safe_redirect
 
         # Enable Rate limiter
         # Flask limiter needs to be initialised after talisman, since if the
