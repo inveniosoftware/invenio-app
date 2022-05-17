@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2017-2018 CERN.
+# Copyright (C) 2022 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -81,6 +82,7 @@ def _test_csp_default_src(app, expect):
 
 def test_csp_default_src_when_debug_false(app):
     """Test the Content-Security-Policy header when app debug is False."""
+    app.config["DEBUG"] = False
     expect = "default-src 'self'; object-src 'none'"
     _test_csp_default_src(app, expect)
 
