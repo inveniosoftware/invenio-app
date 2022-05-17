@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2017-2019 CERN.
+# Copyright (C) 2022 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -116,7 +117,7 @@ class InvenioApp(object):
         :param app: An instance of :class:`~flask.Flask`.
         """
         config_apps = ["APP_", "RATELIMIT_"]
-        flask_talisman_debug_mode = ["'unsafe-inline'"]
+        flask_talisman_debug_mode = "'unsafe-inline'"
         for k in dir(config):
             if any([k.startswith(prefix) for prefix in config_apps]):
                 app.config.setdefault(k, getattr(config, k))
@@ -124,12 +125,16 @@ class InvenioApp(object):
         if app.config["DEBUG"]:
             app.config.setdefault("APP_DEFAULT_SECURE_HEADERS", {})
             headers = app.config["APP_DEFAULT_SECURE_HEADERS"]
+
             # ensure `content_security_policy` is not set to {}
             if headers.get("content_security_policy") != {}:
                 headers.setdefault("content_security_policy", {})
                 csp = headers["content_security_policy"]
+
                 # ensure `default-src` is not set to []
                 if csp.get("default-src") != []:
                     csp.setdefault("default-src", [])
+
                     # add default `content_security_policy` value when debug
-                    csp["default-src"] += flask_talisman_debug_mode
+                    if flask_talisman_debug_mode not in csp["default-src"]:
+                        csp["default-src"].append(flask_talisman_debug_mode)
