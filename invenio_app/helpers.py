@@ -23,10 +23,10 @@ class TrustedHostsMixin(object):
     def trusted_hosts(self):
         """Get list of trusted hosts."""
         if current_app:
-            return current_app.config.get('APP_ALLOWED_HOSTS', None)
+            return current_app.config.get("APP_ALLOWED_HOSTS", None)
 
 
-def get_safe_redirect_target(arg='next', _target=None):
+def get_safe_redirect_target(arg="next", _target=None):
     """Get URL to redirect to and ensure that it is local.
 
     :param arg: URL argument.
@@ -43,14 +43,15 @@ def safe_redirect(target):
     """Ensure redirect is a local redirect."""
     if target:
         redirect_uri = urisplit(target)
-        allowed_hosts = current_app.config.get('APP_ALLOWED_HOSTS', [])
+        allowed_hosts = current_app.config.get("APP_ALLOWED_HOSTS", [])
         if redirect_uri.host in allowed_hosts:
             return target
         elif redirect_uri.path:
             return uricompose(
                 path=redirect_uri.path,
                 query=redirect_uri.query,
-                fragment=redirect_uri.fragment)
+                fragment=redirect_uri.fragment,
+            )
     return None
 
 
@@ -76,7 +77,7 @@ class ThemeJinjaLoader(BaseLoader):
     @cached_property
     def prefixes(self):
         """Return the active prefixes to be used for template lookup."""
-        theme = self.app.config.get('APP_THEME', [])
+        theme = self.app.config.get("APP_THEME", [])
         if isinstance(theme, str):
             theme = [theme]
         return theme

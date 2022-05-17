@@ -23,7 +23,7 @@ from invenio_app.limiter import set_rate_limit
 RATELIMIT_APPLICATION = set_rate_limit
 """Global rate limit."""
 
-RATELIMIT_STRATEGY = 'moving-window'
+RATELIMIT_STRATEGY = "moving-window"
 """The rate limiting strategy to use.
 
 The strategy used here is the most consistant but also expensive one.
@@ -36,7 +36,7 @@ traffic, you can replace it with another one from the following
 RATELIMIT_HEADERS_ENABLED = True
 """Enable rate limit headers. (Default: ``True``)"""
 
-RATELIMIT_STORAGE_URL = 'memory://'
+RATELIMIT_STORAGE_URL = "memory://"
 """Storage backend to store rate-limiting information.
 
     Memory is used by default if no value is provided.
@@ -81,10 +81,10 @@ blueprint path accompanied by a `rate limit value
     }
 """
 
-RATELIMIT_AUTHENTICATED_USER = '5000 per hour;100 per minute'
+RATELIMIT_AUTHENTICATED_USER = "5000 per hour;100 per minute"
 """Rate limit for logged in users."""
 
-RATELIMIT_GUEST_USER = '1000 per hour;60 per minute'
+RATELIMIT_GUEST_USER = "1000 per hour;60 per minute"
 """Rate limit for non logged in users."""
 
 APP_THEME = None
@@ -116,23 +116,20 @@ enough to disable any side effects such as force ``https``.
 """
 
 APP_DEFAULT_SECURE_HEADERS = {
-    'force_https': True,
-    'force_https_permanent': False,
-    'force_file_save': False,
-    'frame_options': 'sameorigin',
-    'frame_options_allow_from': None,
-    'strict_transport_security': True,
-    'strict_transport_security_preload': False,
-    'strict_transport_security_max_age': 31556926,  # One year in seconds
-    'strict_transport_security_include_subdomains': True,
-    'content_security_policy': {
-        'default-src': ["'self'"],
-        'object-src': ["'none'"]
-    },
-    'content_security_policy_report_uri': None,
-    'content_security_policy_report_only': False,
-    'session_cookie_secure': True,
-    'session_cookie_http_only': True
+    "force_https": True,
+    "force_https_permanent": False,
+    "force_file_save": False,
+    "frame_options": "sameorigin",
+    "frame_options_allow_from": None,
+    "strict_transport_security": True,
+    "strict_transport_security_preload": False,
+    "strict_transport_security_max_age": 31556926,  # One year in seconds
+    "strict_transport_security_include_subdomains": True,
+    "content_security_policy": {"default-src": ["'self'"], "object-src": ["'none'"]},
+    "content_security_policy_report_uri": None,
+    "content_security_policy_report_only": False,
+    "session_cookie_secure": True,
+    "session_cookie_http_only": True,
 }
 """Talisman default Secure Headers configuration.
 
