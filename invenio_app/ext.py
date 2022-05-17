@@ -42,12 +42,12 @@ class InvenioApp(object):
         self.init_config(app)
 
         # Enable secure HTTP headers
-        if app.config['APP_ENABLE_SECURE_HEADERS']:
+        if app.config["APP_ENABLE_SECURE_HEADERS"]:
             self.talisman = Talisman(
-                app, **app.config.get('APP_DEFAULT_SECURE_HEADERS', {})
+                app, **app.config.get("APP_DEFAULT_SECURE_HEADERS", {})
             )
 
-        app.jinja_env.filters['safe_redirect'] = safe_redirect
+        app.jinja_env.filters["safe_redirect"] = safe_redirect
 
         # Enable Rate limiter
         # Flask limiter needs to be initialised after talisman, since if the
@@ -56,27 +56,28 @@ class InvenioApp(object):
         self.limiter = Limiter(
             app,
             key_func=obj_or_import_string(
-                app.config.get('RATELIMIT_KEY_FUNC'),
-                default=useragent_and_ip_limit_key)
+                app.config.get("RATELIMIT_KEY_FUNC"), default=useragent_and_ip_limit_key
+            ),
         )
 
         # Enable PING view
-        if app.config['APP_HEALTH_BLUEPRINT_ENABLED']:
-            blueprint = Blueprint('invenio_app_ping', __name__)
+        if app.config["APP_HEALTH_BLUEPRINT_ENABLED"]:
+            blueprint = Blueprint("invenio_app_ping", __name__)
             limiter = self.limiter
 
-            @blueprint.route('/ping', methods=['HEAD', 'OPTIONS', 'GET'])
+            @blueprint.route("/ping", methods=["HEAD", "OPTIONS", "GET"])
             @limiter.exempt
             def ping():
                 """Load balancer ping view."""
-                return 'OK'
+                return "OK"
 
-            ping.talisman_view_options = {'force_https': False}
+            ping.talisman_view_options = {"force_https": False}
 
             app.register_blueprint(blueprint)
 
-        requestid_header = app.config.get('APP_REQUESTID_HEADER')
+        requestid_header = app.config.get("APP_REQUESTID_HEADER")
         if requestid_header:
+
             @app.before_request
             def set_request_id():
                 """Extracts a request id from an HTTP header."""
@@ -89,44 +90,46 @@ class InvenioApp(object):
         # If installed register the Flask-DebugToolbar extension
         try:
             from flask_debugtoolbar import DebugToolbarExtension
-            app.extensions['flask-debugtoolbar'] = DebugToolbarExtension(app)
+
+            app.extensions["flask-debugtoolbar"] = DebugToolbarExtension(app)
         except ImportError:
-            app.logger.debug('Flask-DebugToolbar extension not installed.')
+            app.logger.debug("Flask-DebugToolbar extension not installed.")
 
         # Force host header check (by evaluating request.host) in order to make
         # Werkzeugs trusted host feature work properly.
-        if app.config['APP_ALLOWED_HOSTS']:
+        if app.config["APP_ALLOWED_HOSTS"]:
+
             @app.before_request
             def before_request():
                 request.host
 
         # Add theme template loader
-        if app.config.get('APP_THEME'):
+        if app.config.get("APP_THEME"):
             app.jinja_env.loader = ThemeJinjaLoader(app, app.jinja_env.loader)
 
         # Register self
-        app.extensions['invenio-app'] = self
+        app.extensions["invenio-app"] = self
 
     def init_config(self, app):
         """Initialize configuration.
 
         :param app: An instance of :class:`~flask.Flask`.
         """
-        config_apps = ['APP_', 'RATELIMIT_']
+        config_apps = ["APP_", "RATELIMIT_"]
         flask_talisman_debug_mode = ["'unsafe-inline'"]
         for k in dir(config):
             if any([k.startswith(prefix) for prefix in config_apps]):
                 app.config.setdefault(k, getattr(config, k))
 
-        if app.config['DEBUG']:
-            app.config.setdefault('APP_DEFAULT_SECURE_HEADERS', {})
-            headers = app.config['APP_DEFAULT_SECURE_HEADERS']
+        if app.config["DEBUG"]:
+            app.config.setdefault("APP_DEFAULT_SECURE_HEADERS", {})
+            headers = app.config["APP_DEFAULT_SECURE_HEADERS"]
             # ensure `content_security_policy` is not set to {}
-            if headers.get('content_security_policy') != {}:
-                headers.setdefault('content_security_policy', {})
-                csp = headers['content_security_policy']
+            if headers.get("content_security_policy") != {}:
+                headers.setdefault("content_security_policy", {})
+                csp = headers["content_security_policy"]
                 # ensure `default-src` is not set to []
-                if csp.get('default-src') != []:
-                    csp.setdefault('default-src', [])
+                if csp.get("default-src") != []:
+                    csp.setdefault("default-src", [])
                     # add default `content_security_policy` value when debug
-                    csp['default-src'] += flask_talisman_debug_mode
+                    csp["default-src"] += flask_talisman_debug_mode

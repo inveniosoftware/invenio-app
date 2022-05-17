@@ -16,6 +16,7 @@ from invenio_app.factory import create_ui
 def test_version():
     """Test version import."""
     from invenio_app import __version__
+
     assert __version__
 
 
@@ -28,29 +29,30 @@ def test_config_loader():
 def test_trusted_hosts():
     """Test trusted hosts configuration."""
     app = create_ui(
-        APP_ALLOWED_HOSTS=['example.org', 'www.example.org'],
+        APP_ALLOWED_HOSTS=["example.org", "www.example.org"],
         APP_ENABLE_SECURE_HEADERS=False,
-        RATELIMIT_ENABLED=False
+        RATELIMIT_ENABLED=False,
     )
 
-    @app.route('/host')
+    @app.route("/host")
     def index_host():
         return request.host
 
-    @app.route('/url-for')
+    @app.route("/url-for")
     def index_url():
-        return url_for('index_url', _external=True)
+        return url_for("index_url", _external=True)
 
     with app.test_client() as client:
-        for u in ['/host', '/url-for']:
-            res = client.get(u, headers={'Host': 'attacker.org'})
+        for u in ["/host", "/url-for"]:
+            res = client.get(u, headers={"Host": "attacker.org"})
             assert res.status_code == 400
 
-            res = client.get(u, headers={'Host': 'example.org'})
+            res = client.get(u, headers={"Host": "example.org"})
             assert res.status_code == 200
 
-            res = client.get(u, headers={'Host': 'www.example.org'})
+            res = client.get(u, headers={"Host": "www.example.org"})
             assert res.status_code == 200
+
 
 # There used to be a test here checking if the X-Forwarded-Host
 #  is checked as well. It was deleted because from werkzeug 0.15.0 onwards

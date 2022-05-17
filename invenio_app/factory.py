@@ -19,11 +19,9 @@ from invenio_config import create_config_loader
 
 from .helpers import TrustedHostsMixin
 
-env_prefix = 'INVENIO'
+env_prefix = "INVENIO"
 
-invenio_config_loader = create_config_loader(
-    config=None, env_prefix=env_prefix
-)
+invenio_config_loader = create_config_loader(config=None, env_prefix=env_prefix)
 
 
 def instance_path():
@@ -32,8 +30,9 @@ def instance_path():
     Defaults to ``<env_prefix>_INSTANCE_PATH``
      or if environment variable is not set ``<sys.prefix>/var/instance``.
     """
-    return os.getenv(env_prefix + '_INSTANCE_PATH') or \
-        os.path.join(sys.prefix, 'var', 'instance')
+    return os.getenv(env_prefix + "_INSTANCE_PATH") or os.path.join(
+        sys.prefix, "var", "instance"
+    )
 
 
 def static_folder():
@@ -42,8 +41,9 @@ def static_folder():
     Defaults to ``<env_prefix>_STATIC_FOLDER``
     or if environment variable is not set ``<sys.prefix>/var/instance/static``.
     """
-    return os.getenv(env_prefix + '_STATIC_FOLDER') or \
-        os.path.join(instance_path(), 'static')
+    return os.getenv(env_prefix + "_STATIC_FOLDER") or os.path.join(
+        instance_path(), "static"
+    )
 
 
 def static_url_path():
@@ -52,7 +52,7 @@ def static_url_path():
     Defaults to ``<env_prefix>_STATIC_URL_PATH``
     or if environment variable is not set ``/static``.
     """
-    return os.getenv(env_prefix + '_STATIC_URL_PATH') or '/static'
+    return os.getenv(env_prefix + "_STATIC_URL_PATH") or "/static"
 
 
 def config_loader(app, **kwargs_config):
@@ -72,7 +72,7 @@ def app_class():
     application class.
     """
     try:
-        pkg_resources.get_distribution('invenio-files-rest')
+        pkg_resources.get_distribution("invenio-files-rest")
         from invenio_files_rest.app import Flask as FlaskBase
     except pkg_resources.DistributionNotFound:
         from flask import Flask as FlaskBase
@@ -88,11 +88,11 @@ def app_class():
 
 
 create_api = create_app_factory(
-    'invenio',
+    "invenio",
     config_loader=config_loader,
-    blueprint_entry_points=['invenio_base.api_blueprints'],
-    extension_entry_points=['invenio_base.api_apps'],
-    converter_entry_points=['invenio_base.api_converters'],
+    blueprint_entry_points=["invenio_base.api_blueprints"],
+    extension_entry_points=["invenio_base.api_apps"],
+    converter_entry_points=["invenio_base.api_converters"],
     wsgi_factory=wsgi_proxyfix(),
     instance_path=instance_path,
     root_path=instance_path,
@@ -101,11 +101,11 @@ create_api = create_app_factory(
 """Flask application factory for Invenio REST API."""
 
 create_ui = create_app_factory(
-    'invenio',
+    "invenio",
     config_loader=config_loader,
-    blueprint_entry_points=['invenio_base.blueprints'],
-    extension_entry_points=['invenio_base.apps'],
-    converter_entry_points=['invenio_base.converters'],
+    blueprint_entry_points=["invenio_base.blueprints"],
+    extension_entry_points=["invenio_base.apps"],
+    converter_entry_points=["invenio_base.converters"],
     wsgi_factory=wsgi_proxyfix(),
     instance_path=instance_path,
     static_folder=static_folder,
@@ -116,12 +116,12 @@ create_ui = create_app_factory(
 """Flask application factory for Invenio UI."""
 
 create_app = create_app_factory(
-    'invenio',
+    "invenio",
     config_loader=config_loader,
-    blueprint_entry_points=['invenio_base.blueprints'],
-    extension_entry_points=['invenio_base.apps'],
-    converter_entry_points=['invenio_base.converters'],
-    wsgi_factory=wsgi_proxyfix(create_wsgi_factory({'/api': create_api})),
+    blueprint_entry_points=["invenio_base.blueprints"],
+    extension_entry_points=["invenio_base.apps"],
+    converter_entry_points=["invenio_base.converters"],
+    wsgi_factory=wsgi_proxyfix(create_wsgi_factory({"/api": create_api})),
     instance_path=instance_path,
     static_folder=static_folder,
     root_path=instance_path,

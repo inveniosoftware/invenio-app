@@ -14,5 +14,6 @@ from click.testing import CliRunner
 def test_basic_cli():
     """Test version import."""
     from invenio_app.cli import cli
+
     res = CliRunner().invoke(cli)
     assert res.exit_code == 0

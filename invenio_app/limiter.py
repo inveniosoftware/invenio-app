@@ -43,27 +43,27 @@ def set_rate_limit():
     3)Finally if none of the above is our case then the
     ```RATELIMIT_GUEST_USER``` will be the one to be returned.
     """
-    endpoint_limits = \
-        current_app.config.get('RATELIMIT_PER_ENDPOINT', {})
+    endpoint_limits = current_app.config.get("RATELIMIT_PER_ENDPOINT", {})
     if request.endpoint in endpoint_limits:
         # Case of whitelisted endpoint.
         return endpoint_limits[request.endpoint]
 
     try:
-        pkg_resources.get_distribution('flask_security_invenio ')
+        pkg_resources.get_distribution("flask_security_invenio ")
         from flask_security import current_user
+
         user = current_user
     except pkg_resources.DistributionNotFound:
         try:
-            pkg_resources.get_distribution('flask_security')
+            pkg_resources.get_distribution("flask_security")
             from flask_security import current_user
+
             user = current_user
         except pkg_resources.DistributionNotFound:
             user = None
 
     if user and user.is_authenticated:
         return g.get(
-            'user_rate_limit',
-            current_app.config['RATELIMIT_AUTHENTICATED_USER']
+            "user_rate_limit", current_app.config["RATELIMIT_AUTHENTICATED_USER"]
         )
-    return current_app.config['RATELIMIT_GUEST_USER']
+    return current_app.config["RATELIMIT_GUEST_USER"]
