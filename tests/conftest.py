@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2017-2018 CERN.
+# Copyright (C) 2022 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -11,16 +12,12 @@
 import imp
 import sys
 from collections import namedtuple
+from copy import deepcopy
 
 import pytest
-from flask import Flask
-from flask import current_app as flask_current_app
-from flask import g
+from flask import Flask, g
 from flask_limiter import Limiter
-from mock import patch
-from pkg_resources import Distribution
 
-from invenio_app import InvenioApp
 from invenio_app.config import APP_DEFAULT_SECURE_HEADERS, set_rate_limit
 from invenio_app.ext import useragent_and_ip_limit_key
 from invenio_app.helpers import obj_or_import_string
@@ -34,7 +31,8 @@ def base_app():
         SECRET_KEY="SECRET_KEY",
         TESTING=True,
     )
-    app_.config["APP_DEFAULT_SECURE_HEADERS"] = APP_DEFAULT_SECURE_HEADERS
+
+    app_.config["APP_DEFAULT_SECURE_HEADERS"] = deepcopy(APP_DEFAULT_SECURE_HEADERS)
     app_.config["APP_DEFAULT_SECURE_HEADERS"]["force_https"] = False
 
     @app_.route("/requestid")
@@ -94,7 +92,7 @@ def wsgi_apps():
             SECRET_KEY="SECRET_KEY",
             TESTING=True,
         )
-        app.config["APP_DEFAULT_SECURE_HEADERS"] = APP_DEFAULT_SECURE_HEADERS
+        app.config["APP_DEFAULT_SECURE_HEADERS"] = deepcopy(APP_DEFAULT_SECURE_HEADERS)
         app.config["APP_DEFAULT_SECURE_HEADERS"]["force_https"] = False
 
     # API
