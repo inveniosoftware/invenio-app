@@ -41,12 +41,17 @@ class InvenioApp(object):
         """
         # Init the configuration
         self.init_config(app)
-
+        headers = app.config.get("APP_DEFAULT_SECURE_HEADERS", {})
+        default_security_policies = headers.get("content_security_policy", {}).get(
+            "default-src", {}
+        )
+        # Update headers to add the site ui URL, useful when having multiple URLs as images are loaded always from the
+        # URL defined in SITE_UI_URL
+        if default_security_policies:
+            default_security_policies.append(app.config.get("SITE_UI_URL"))
         # Enable secure HTTP headers
         if app.config["APP_ENABLE_SECURE_HEADERS"]:
-            self.talisman = Talisman(
-                app, **app.config.get("APP_DEFAULT_SECURE_HEADERS", {})
-            )
+            self.talisman = Talisman(app, **headers)
 
         app.jinja_env.filters["safe_redirect"] = safe_redirect
 
