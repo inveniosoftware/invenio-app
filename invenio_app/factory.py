@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2017-2018 CERN.
+# Copyright (C) 2023 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -106,7 +107,7 @@ create_ui = create_app_factory(
     blueprint_entry_points=["invenio_base.blueprints"],
     extension_entry_points=["invenio_base.apps"],
     converter_entry_points=["invenio_base.converters"],
-    init_functions_entry_points=["invenio_base.functions"],
+    finalize_app_entry_points=["invenio_base.finalize_app"],
     wsgi_factory=wsgi_proxyfix(),
     instance_path=instance_path,
     static_folder=static_folder,
@@ -122,7 +123,7 @@ create_app = create_app_factory(
     blueprint_entry_points=["invenio_base.blueprints"],
     extension_entry_points=["invenio_base.apps"],
     converter_entry_points=["invenio_base.converters"],
-    init_functions_entry_points=["invenio_base.functions"],
+    finalize_app_entry_points=["invenio_base.finalize_app"],
     wsgi_factory=wsgi_proxyfix(create_wsgi_factory({"/api": create_api})),
     instance_path=instance_path,
     static_folder=static_folder,
