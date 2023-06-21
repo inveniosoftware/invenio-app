@@ -94,6 +94,7 @@ create_api = create_app_factory(
     blueprint_entry_points=["invenio_base.api_blueprints"],
     extension_entry_points=["invenio_base.api_apps"],
     converter_entry_points=["invenio_base.api_converters"],
+    finalize_app_entry_points=["invenio_base.api_finalize_app"],
     wsgi_factory=wsgi_proxyfix(),
     instance_path=instance_path,
     root_path=instance_path,
