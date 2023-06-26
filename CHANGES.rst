@@ -1,12 +1,20 @@
 ..
     This file is part of Invenio.
-    Copyright (C) 2017-2019 CERN.
+    Copyright (C) 2017-2023 CERN.
+    Copyright (C) 2023 Graz University of Technology.
 
     Invenio is free software; you can redistribute it and/or modify it
     under the terms of the MIT License; see LICENSE file for more details.
 
 Changes
 =======
+
+Version 1.4.0 (released 2023-06-26)
+
+- Adds ``invenio_base.finalize_app`` and ``invenio_base.api_finalize_app``
+  entry points to the creation of the factory function ``create_app`` and
+  ``create_api`` to overcome the deprecation of ``before_(app_)first_request``
+  in Flask>=2.3.0
 
 Version 1.3.4 (released 2022-04-06)
 
