@@ -9,6 +9,8 @@
 
 """Invenio app extension."""
 
+import warnings
+
 from flask import Blueprint, g, request
 from flask_limiter import Limiter
 from flask_talisman import Talisman
@@ -116,6 +118,14 @@ class InvenioApp(object):
 
         :param app: An instance of :class:`~flask.Flask`.
         """
+        # RATELIMIT_STORAGE_URL was deprecated in 2.0 and removed in 3.0
+        if "RATELIMIT_STORAGE_URL" in app.config:
+            app.config["RATELIMIT_STORAGE_URI"] = app.config["RATELIMIT_STORAGE_URI"]
+            warnings.warn(
+                "RATELIMIT_STORAGE_URL has been renamed to RATELIMIT_STORAGE_URI.",
+                DeprecationWarning,
+            )
+
         config_apps = ["APP_", "RATELIMIT_"]
         flask_talisman_debug_mode = "'unsafe-inline'"
         for k in dir(config):

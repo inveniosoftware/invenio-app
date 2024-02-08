@@ -36,7 +36,7 @@ traffic, you can replace it with another one from the following
 RATELIMIT_HEADERS_ENABLED = True
 """Enable rate limit headers. (Default: ``True``)"""
 
-RATELIMIT_STORAGE_URL = "memory://"
+RATELIMIT_STORAGE_URI = "memory://"
 """Storage backend to store rate-limiting information.
 
     Memory is used by default if no value is provided.
