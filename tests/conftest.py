@@ -9,8 +9,8 @@
 
 """Pytest configuration."""
 
-import imp
 import sys
+import types
 from collections import namedtuple
 from copy import deepcopy
 
@@ -123,7 +123,7 @@ def create_mocked_flask_security_with_user_init():
     def mocked_flask_security(user):
         """Add mocked flask-security."""
         module_name = "flask_security"
-        test_api_module = imp.new_module(module_name)
+        test_api_module = types.ModuleType(module_name)
         test_api_module.current_user = namedtuple("User", user.keys())(*user.values())
         sys.modules[module_name] = test_api_module
         return test_api_module
