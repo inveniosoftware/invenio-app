@@ -120,7 +120,7 @@ class InvenioApp(object):
         """
         # RATELIMIT_STORAGE_URL was deprecated in 2.0 and removed in 3.0
         if "RATELIMIT_STORAGE_URL" in app.config:
-            app.config["RATELIMIT_STORAGE_URI"] = app.config["RATELIMIT_STORAGE_URI"]
+            app.config["RATELIMIT_STORAGE_URI"] = app.config["RATELIMIT_STORAGE_URL"]
             warnings.warn(
                 "RATELIMIT_STORAGE_URL has been renamed to RATELIMIT_STORAGE_URI.",
                 DeprecationWarning,
