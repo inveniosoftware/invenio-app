@@ -9,6 +9,11 @@
 Changes
 =======
 
+Version 1.5.0 (released 2023-03-04)
+
+- Bumps Flask-Limiter to v2.x, to support Python 3.12.
+- Fixes deprecated RATELIMIT_STORAGE_URL variable, now called RATELIMIT_STORAGE_URI.
+
 Version 1.4.0 (released 2023-06-26)
 
 - Adds ``invenio_base.finalize_app`` and ``invenio_base.api_finalize_app``
