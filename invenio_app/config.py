@@ -68,8 +68,8 @@ RATELIMIT_PER_ENDPOINT = {
     # Login and registration
     "security.login": "10 per minute",
     "security.register": "10 per minute",
-    "security.forgot_password": "1 per minute",
-    "security.reset_password": "1 per minute",
+    "security.forgot_password": "10 per minute",
+    "security.reset_password": "10 per minute",
 }
 """Specifically defined Flask rate limits per endpoint.
 
