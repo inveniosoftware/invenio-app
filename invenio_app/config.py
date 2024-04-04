@@ -64,7 +64,13 @@ For more information you can also see `here
 <https://flask-limiter.readthedocs.io/en/stable/#rate-limit-domain>`_
 """
 
-RATELIMIT_PER_ENDPOINT = {}
+RATELIMIT_PER_ENDPOINT = {
+    # Login and registration
+    "security.login": "10 per minute",
+    "security.register": "10 per minute",
+    "security.forgot_password": "1 per minute",
+    "security.reset_password": "1 per minute",
+}
 """Specifically defined Flask rate limits per endpoint.
 
 This config is not part of Flask-Limiter.
