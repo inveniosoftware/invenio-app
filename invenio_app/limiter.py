@@ -8,7 +8,6 @@
 
 """Flask Limiter functions."""
 
-import pkg_resources
 from flask import current_app, g, request
 
 
@@ -49,18 +48,12 @@ def set_rate_limit():
         return endpoint_limits[request.endpoint]
 
     try:
-        pkg_resources.get_distribution("flask_security_invenio ")
-        from flask_security import current_user
+        from flask_login import current_user
 
         user = current_user
-    except pkg_resources.DistributionNotFound:
-        try:
-            pkg_resources.get_distribution("flask_security")
-            from flask_security import current_user
 
-            user = current_user
-        except pkg_resources.DistributionNotFound:
-            user = None
+    except ModuleNotFoundError:
+        user = None
 
     if user and user.is_authenticated:
         return g.get(
