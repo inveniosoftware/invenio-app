@@ -2,7 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2017-2018 CERN.
-# Copyright (C) 2023 Graz University of Technology.
+# Copyright (C) 2023-2024 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -135,4 +135,23 @@ create_app = create_app_factory(
 """Flask application factory for combined UI + REST API.
 
 REST API is mounted under ``/api``.
+"""
+
+create_cli = create_app_factory(
+    "invenio",
+    config_loader=config_loader,
+    blueprint_entry_points=["invenio_base.blueprints"],
+    extension_entry_points=["invenio_base.apps"],
+    converter_entry_points=[],
+    finalize_app_entry_points=[],
+    wsgi_factory=None,
+    instance_path=instance_path,
+    static_folder=static_folder,
+    root_path=instance_path,
+    static_url_path=static_url_path(),
+    app_class=app_class(),
+)
+"""Flask application factor for cli.
+
+as small as possible!
 """
