@@ -170,7 +170,7 @@ to overwrite any existing Invenio files.
 
 from .ext import InvenioApp
 
-__version__ = "1.5.1"
+__version__ = "2.0.0"
 
 __all__ = (
     "__version__",

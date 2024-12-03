@@ -9,6 +9,11 @@
 Changes
 =======
 
+Version 2.0.0 (release 2024-12-03)
+
+- factory: change to new TRUSTS_HOSTS from flask
+- setup: bump major dependencies
+
 Version 1.5.1 (release 2024-12-03)
 
 - setup: change to reusable workflows
