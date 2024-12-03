@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2017-2019 CERN.
+# Copyright (C) 2024 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -29,7 +30,7 @@ def test_config_loader():
 def test_trusted_hosts():
     """Test trusted hosts configuration."""
     app = create_ui(
-        APP_ALLOWED_HOSTS=["example.org", "www.example.org"],
+        TRUSTED_HOSTS=["example.org", "www.example.org"],
         APP_ENABLE_SECURE_HEADERS=False,
         RATELIMIT_ENABLED=False,
     )

@@ -2,7 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2017-2018 CERN.
-# Copyright (C) 2023 Graz University of Technology.
+# Copyright (C) 2023-2024 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -17,8 +17,6 @@ from invenio_base.app import create_app_factory
 from invenio_base.wsgi import create_wsgi_factory, wsgi_proxyfix
 from invenio_cache import BytecodeCache
 from invenio_config import create_config_loader
-
-from .helpers import TrustedHostsMixin
 
 env_prefix = "INVENIO"
 
@@ -60,6 +58,12 @@ def config_loader(app, **kwargs_config):
     """Configuration loader."""
     invenio_config_loader(app, **kwargs_config)
 
+    if app.config.get("APP_ALLOWED_HOSTS", None):
+        app.config["TRUSTED_HOSTS"] = app.config["APP_ALLOWED_HOSTS"]
+        app.logger.warning(
+            "APP_ALLOWED_HOSTS is deprecated and has been replaced by TRUSTED_HOSTS."
+        )
+
     # TODO: Move this to invenio_cache.ext.InvenioCache.init_app
     app.jinja_env.cache_size = 1000
     app.jinja_env.bytecode_cache = BytecodeCache(app)
@@ -74,16 +78,9 @@ def app_class():
     """
     try:
         pkg_resources.get_distribution("invenio-files-rest")
-        from invenio_files_rest.app import Flask as FlaskBase
+        from invenio_files_rest.app import Flask
     except pkg_resources.DistributionNotFound:
-        from flask import Flask as FlaskBase
-
-    # Add Host header validation via APP_ALLOWED_HOSTS configuration variable.
-    class Request(TrustedHostsMixin, FlaskBase.request_class):
-        pass
-
-    class Flask(FlaskBase):
-        request_class = Request
+        from flask import Flask
 
     return Flask
 
