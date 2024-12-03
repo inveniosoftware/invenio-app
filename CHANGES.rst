@@ -9,6 +9,13 @@
 Changes
 =======
 
+Version 1.5.1 (release 2024-12-03)
+
+- setup: change to reusable workflows
+- setup: pin dependencies
+- config: updated rate limit for password
+- security: added default rate limits for endpoints
+
 Version 1.5.0 (released 2023-03-04)
 
 - Bumps Flask-Limiter to v2.x, to support Python 3.12.
