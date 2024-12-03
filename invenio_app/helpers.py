@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2017-2019 CERN.
+# Copyright (C) 2024 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -14,16 +15,6 @@ from flask import current_app, request
 from jinja2 import BaseLoader, TemplateNotFound
 from uritools import uricompose, urisplit
 from werkzeug.utils import cached_property, import_string
-
-
-class TrustedHostsMixin(object):
-    """Mixin for reading trusted hosts from application config."""
-
-    @property
-    def trusted_hosts(self):
-        """Get list of trusted hosts."""
-        if current_app:
-            return current_app.config.get("APP_ALLOWED_HOSTS", None)
 
 
 def get_safe_redirect_target(arg="next", _target=None):
@@ -43,8 +34,8 @@ def safe_redirect(target):
     """Ensure redirect is a local redirect."""
     if target:
         redirect_uri = urisplit(target)
-        allowed_hosts = current_app.config.get("APP_ALLOWED_HOSTS", [])
-        if redirect_uri.host in allowed_hosts:
+        trusted_hosts = current_app.config.get("TRUSTED_HOSTS", [])
+        if redirect_uri.host in trusted_hosts:
             return target
         elif redirect_uri.path:
             return uricompose(

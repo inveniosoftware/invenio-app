@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2017-2018 CERN.
+# Copyright (C) 2024 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -169,7 +170,7 @@ then also many security barriers are automatically switched off
         return 'Jessica Jones'
 """
 
-APP_ALLOWED_HOSTS = None
+TRUSTED_HOSTS = None
 """A list of host/domain names that can be served.
 
 This is a security measure to prevent HTTP Host header attacks, which are

@@ -2,7 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2017-2018 CERN.
-# Copyright (C) 2022 Graz University of Technology.
+# Copyright (C) 2022-2024 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -63,7 +63,7 @@ def app_with_no_limiter(base_app):
 def app(base_app):
     """Flask application fixture."""
     base_app.config.update(
-        APP_ALLOWED_HOSTS=["localhost"],
+        TRUSTED_HOSTS=["localhost"],
         RATELIMIT_APPLICATION=set_rate_limit,
         RATELIMIT_GUEST_USER="2 per second",
         RATELIMIT_AUTHENTICATED_USER="5 per second",
