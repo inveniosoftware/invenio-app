@@ -14,6 +14,7 @@ import sys
 
 import pkg_resources
 from invenio_base.app import create_app_factory
+from invenio_base.urls import create_invenio_apps_urls_builder_factory
 from invenio_base.wsgi import create_wsgi_factory, wsgi_proxyfix
 from invenio_cache import BytecodeCache
 from invenio_config import create_config_loader
@@ -96,6 +97,9 @@ create_api = create_app_factory(
     instance_path=instance_path,
     root_path=instance_path,
     app_class=app_class(),
+    urls_builder_factory=create_invenio_apps_urls_builder_factory(
+        "SITE_API_URL", "SITE_UI_URL", ["invenio_base.blueprints"]
+    ),
 )
 """Flask application factory for Invenio REST API."""
 
@@ -112,6 +116,9 @@ create_ui = create_app_factory(
     root_path=instance_path,
     static_url_path=static_url_path(),
     app_class=app_class(),
+    urls_builder_factory=create_invenio_apps_urls_builder_factory(
+        "SITE_UI_URL", "SITE_API_URL", ["invenio_base.api_blueprints"]
+    ),
 )
 """Flask application factory for Invenio UI."""
 
@@ -128,6 +135,9 @@ create_app = create_app_factory(
     root_path=instance_path,
     static_url_path=static_url_path(),
     app_class=app_class(),
+    urls_builder_factory=create_invenio_apps_urls_builder_factory(
+        "SITE_UI_URL", "SITE_API_URL", ["invenio_base.api_blueprints"]
+    ),
 )
 """Flask application factory for combined UI + REST API.
 
