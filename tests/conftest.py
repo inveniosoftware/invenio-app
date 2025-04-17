@@ -117,18 +117,18 @@ def wsgi_apps():
 
 
 @pytest.fixture()
-def create_mocked_flask_security_with_user_init():
-    """Create a function initializing flask security with a user."""
+def create_mocked_flask_login_with_user_init():
+    """Create a function initializing flask login with a user."""
 
-    def mocked_flask_security(user):
-        """Add mocked flask-security."""
-        module_name = "flask_security"
+    def mocked_flask_login(user):
+        """Add mocked flask-login."""
+        module_name = "flask_login"
         test_api_module = types.ModuleType(module_name)
         test_api_module.current_user = namedtuple("User", user.keys())(*user.values())
         sys.modules[module_name] = test_api_module
         return test_api_module
 
-    return mocked_flask_security
+    return mocked_flask_login
 
 
 @pytest.fixture()
