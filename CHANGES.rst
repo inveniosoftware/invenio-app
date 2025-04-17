@@ -2,12 +2,19 @@
     This file is part of Invenio.
     Copyright (C) 2017-2023 CERN.
     Copyright (C) 2023 Graz University of Technology.
+    Copyright (C) 2025 Northwestern University.
 
     Invenio is free software; you can redistribute it and/or modify it
     under the terms of the MIT License; see LICENSE file for more details.
 
 Changes
 =======
+
+Version 2.1.0 (release 2025-04-17)
+
+- factory: integrate invenio_url_for mechanism
+- limiter: replace usage of `pkg_resources` with import
+- limiter/tests: refactor current_user access
 
 Version 2.0.0 (release 2024-12-03)
 
