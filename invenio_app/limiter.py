@@ -10,6 +10,11 @@
 
 from flask import current_app, g, request
 
+try:
+    from flask_login import current_user
+except ModuleNotFoundError:
+    current_user = None
+
 
 def useragent_and_ip_limit_key():
     """Create key for the rate limiting."""
@@ -47,15 +52,7 @@ def set_rate_limit():
         # Case of whitelisted endpoint.
         return endpoint_limits[request.endpoint]
 
-    try:
-        from flask_login import current_user
-
-        user = current_user
-
-    except ModuleNotFoundError:
-        user = None
-
-    if user and user.is_authenticated:
+    if current_user and current_user.is_authenticated:
         return g.get(
             "user_rate_limit", current_app.config["RATELIMIT_AUTHENTICATED_USER"]
         )

@@ -59,7 +59,7 @@ def app_with_no_limiter(base_app):
         yield base_app
 
 
-@pytest.yield_fixture()
+@pytest.fixture()
 def app(base_app):
     """Flask application fixture."""
     base_app.config.update(
@@ -114,21 +114,6 @@ def wsgi_apps():
         wsgi_factory=wsgi_proxyfix(create_wsgi_factory({"/api": create_api})),
     )
     return create_app, create_ui, create_api
-
-
-@pytest.fixture()
-def create_mocked_flask_security_with_user_init():
-    """Create a function initializing flask security with a user."""
-
-    def mocked_flask_security(user):
-        """Add mocked flask-security."""
-        module_name = "flask_security"
-        test_api_module = types.ModuleType(module_name)
-        test_api_module.current_user = namedtuple("User", user.keys())(*user.values())
-        sys.modules[module_name] = test_api_module
-        return test_api_module
-
-    return mocked_flask_security
 
 
 @pytest.fixture()
