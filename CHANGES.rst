@@ -10,6 +10,10 @@
 Changes
 =======
 
+Version 2.2.0 (release 2025-04-25)
+
+- factory: pass converters to create_invenio_apps_builder_factory
+
 Version 2.1.0 (release 2025-04-17)
 
 - factory: integrate invenio_url_for mechanism
