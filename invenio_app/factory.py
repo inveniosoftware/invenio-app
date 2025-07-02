@@ -2,7 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2017-2018 CERN.
-# Copyright (C) 2023-2024 Graz University of Technology.
+# Copyright (C) 2023-2025 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -12,7 +12,6 @@
 import os
 import sys
 
-import pkg_resources
 from invenio_base.app import create_app_factory
 from invenio_base.urls import create_invenio_apps_urls_builder_factory
 from invenio_base.wsgi import create_wsgi_factory, wsgi_proxyfix
@@ -78,9 +77,8 @@ def app_class():
     application class.
     """
     try:
-        pkg_resources.get_distribution("invenio-files-rest")
         from invenio_files_rest.app import Flask
-    except pkg_resources.DistributionNotFound:
+    except ImportError:
         from flask import Flask
 
     return Flask
