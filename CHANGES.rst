@@ -1,7 +1,7 @@
 ..
     This file is part of Invenio.
     Copyright (C) 2017-2023 CERN.
-    Copyright (C) 2023 Graz University of Technology.
+    Copyright (C) 2023-2025 Graz University of Technology.
     Copyright (C) 2025 Northwestern University.
 
     Invenio is free software; you can redistribute it and/or modify it
@@ -9,6 +9,11 @@
 
 Changes
 =======
+
+Version 2.3.0 (release 2025-07-02)
+
+- fix: pkg_resources DeprecationWarning
+- fix: click breaking changes
 
 Version 2.2.0 (release 2025-04-25)
 
