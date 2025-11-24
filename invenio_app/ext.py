@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2017-2026 CERN.
-# SPDX-FileCopyrightText: 2022-2024 Graz University of Technology.
+# SPDX-FileCopyrightText: 2022-2025 Graz University of Technology.
 # SPDX-FileCopyrightText: 2026 TU Wien.
 # SPDX-License-Identifier: MIT
 
@@ -168,7 +168,7 @@ class InvenioApp(object):
 
             app.extensions["flask-debugtoolbar"] = DebugToolbarExtension(app)
         except ImportError:
-            app.logger.debug("Flask-DebugToolbar extension not installed.")
+            pass
 
         # Add theme template loader
         if app.config.get("APP_THEME"):
