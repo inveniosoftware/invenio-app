@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2017-2026 CERN.
-# SPDX-FileCopyrightText: 2022-2024 Graz University of Technology.
+# SPDX-FileCopyrightText: 2022-2026 Graz University of Technology.
 # SPDX-License-Identifier: MIT
 
 """Pytest configuration."""
@@ -71,6 +71,7 @@ def app(base_app, fresh_limiter_instance):
         RATELIMIT_AUTHENTICATED_USER="5 per second",
         RATELIMIT_PER_ENDPOINT={"unlimited_rate": "200 per second"},
         RATELIMIT_HEADERS_ENABLED=True,
+        RATELIMIT_STORAGE_URI="memory://",
     )
     Limiter(
         app=base_app,
