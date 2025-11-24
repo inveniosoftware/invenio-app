@@ -2,7 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2017-2026 CERN.
-# Copyright (C) 2022-2024 Graz University of Technology.
+# Copyright (C) 2022-2026 Graz University of Technology.
 # Copyright (C) 2026 TU Wien.
 #
 # Invenio is free software; you can redistribute it and/or modify it
@@ -173,7 +173,8 @@ class InvenioApp(object):
 
             app.extensions["flask-debugtoolbar"] = DebugToolbarExtension(app)
         except ImportError:
-            app.logger.debug("Flask-DebugToolbar extension not installed.")
+            if app.config["FLASK_DEBUGTOOLBAR_ENABLED"]:
+                app.logger.debug("Flask-DebugToolbar extension not installed.")
 
         # Add theme template loader
         if app.config.get("APP_THEME"):
@@ -195,7 +196,7 @@ class InvenioApp(object):
                 DeprecationWarning,
             )
 
-        config_apps = ["APP_", "RATELIMIT_"]
+        config_apps = ["APP_", "RATELIMIT_", "FLASK_"]
         flask_talisman_debug_mode = "'unsafe-inline'"
         for k in dir(config):
             if any([k.startswith(prefix) for prefix in config_apps]):
