@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2017-2018 CERN.
-# SPDX-FileCopyrightText: 2024 Graz University of Technology.
+# SPDX-FileCopyrightText: 2024-2025 Graz University of Technology.
 # SPDX-License-Identifier: MIT
 
 """Invenio App configuration.
@@ -201,3 +201,6 @@ add it as a header to both the upstream WSGI server and downstream client::
 
 Set to ``None`` to not extract a request id.
 """
+
+FLASK_DEBUGTOOLBAR_ENABLED = True
+"""Make it possible to disable the warning."""
