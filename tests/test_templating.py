@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2020 CERN.
+# SPDX-FileCopyrightText: 2025 Graz University of Technology.
 # SPDX-License-Identifier: MIT
 
 """Test Jinja template loading."""
@@ -41,7 +42,7 @@ def blueprint():
 @pytest.fixture()
 def notheme_app(instance_path, blueprint):
     """Application without template theming."""
-    app = create_ui()
+    app = create_ui(SECRET_KEY="CHANGE_ME")
     app.register_blueprint(blueprint)
     with app.app_context():
         yield app
@@ -50,7 +51,10 @@ def notheme_app(instance_path, blueprint):
 @pytest.fixture()
 def theme_app(instance_path, blueprint):
     """Application with template theming."""
-    app = create_ui(APP_THEME=["semantic-ui", "bootstrap3"])
+    app = create_ui(
+        APP_THEME=["semantic-ui", "bootstrap3"],
+        SECRET_KEY="CHANGE_ME",
+    )
     app.register_blueprint(blueprint)
     with app.app_context():
         yield app
