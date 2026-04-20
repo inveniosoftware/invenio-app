@@ -66,7 +66,7 @@ def _normalize_csp_header(header):
 
 def _test_csp_default_src(app, expect):
     """Assert that the Content-Security-Policy header is the expect param."""
-    ext = InvenioApp(app)
+    InvenioApp(app)
 
     @app.route("/captain_america")
     def captain_america():
