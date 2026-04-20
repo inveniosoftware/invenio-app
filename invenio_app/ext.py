@@ -3,6 +3,7 @@
 # This file is part of Invenio.
 # Copyright (C) 2017-2019 CERN.
 # Copyright (C) 2022-2024 Graz University of Technology.
+# Copyright (C) 2026 TU Wien.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -13,11 +14,48 @@ import warnings
 
 from flask import Blueprint, g, request
 from flask_limiter import Limiter
+from flask_talisman import Talisman as TalismanClass
 
 from invenio_app.limiter import useragent_and_ip_limit_key
 
 from . import config
 from .helpers import ThemeJinjaLoader, obj_or_import_string, safe_redirect
+
+talisman = TalismanClass()
+"""Shared instance of the ``Flask-Talisman`` extension.
+
+This ``Talisman`` instance gets registered as part of the ``Invenio-App``
+extension initialization.
+
+For example, it can be used to set custom CSP headers for a new view function:
+
+.. code-block:: python
+
+    from invenio_app import talisman
+
+    @talisman(content_security_policy={})
+    @app.route("/")
+    def load_some_script():
+        return '<script src="https://example.org/myscript.js"></script>'
+
+
+As another example, it can also be used to override the CSP header values for
+an existing view function, as part of a function that is registered in the
+``invenio_base.finalize_app`` entrypoint group:
+
+.. code-block:: python
+
+    from invenio_app import talisman
+
+    def finalize_app(app):
+        "Remove the CSP header only for the 'profiler.report_view' endpoint."
+        orig_profiler_report_view = app.view_functions["profiler.report_view"]
+
+        @app.endpoint("profiler.report_view")
+        @talisman(content_security_policy={})
+        def wrapped_profiler_report_view(*args, **kwargs):
+            return orig_profiler_report_view(*args, **kwargs)
+"""
 
 
 class InvenioApp(object):
@@ -45,7 +83,8 @@ class InvenioApp(object):
 
         # Enable secure HTTP headers
         if app.config["APP_ENABLE_SECURE_HEADERS"]:
-            self.talisman = Talisman(
+            self.talisman = talisman
+            self.talisman.init_app(
                 app, **app.config.get("APP_DEFAULT_SECURE_HEADERS", {})
             )
 
