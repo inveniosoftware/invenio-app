@@ -9,9 +9,6 @@
 
 """Pytest configuration."""
 
-import sys
-import types
-from collections import namedtuple
 from copy import deepcopy
 
 import pytest

@@ -13,7 +13,6 @@ import warnings
 
 from flask import Blueprint, g, request
 from flask_limiter import Limiter
-from flask_talisman import Talisman
 
 from invenio_app.limiter import useragent_and_ip_limit_key
 
