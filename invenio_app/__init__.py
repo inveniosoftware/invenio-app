@@ -168,12 +168,13 @@ better to provide them via an installabled Python package. Do take care not
 to overwrite any existing Invenio files.
 """
 
-from .ext import InvenioApp, talisman
+from .ext import InvenioApp, limiter, talisman
 
 __version__ = "3.0.0"
 
 __all__ = (
     "__version__",
     "InvenioApp",
+    "limiter",
     "talisman",
 )

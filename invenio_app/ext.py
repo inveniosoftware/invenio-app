@@ -12,14 +12,23 @@
 
 import warnings
 
-from flask import Blueprint, g, request
-from flask_limiter import Limiter
+from flask import Blueprint, current_app, g, request
+from flask_limiter import Limiter as LimiterClass
 from flask_talisman import Talisman as TalismanClass
+from werkzeug.local import LocalProxy
 
 from invenio_app.limiter import useragent_and_ip_limit_key
 
 from . import config
 from .helpers import ThemeJinjaLoader, obj_or_import_string, safe_redirect
+
+_ratelimit_key_func = LocalProxy(
+    lambda: obj_or_import_string(
+        current_app.config.get("RATELIMIT_KEY_FUNC"),
+        default=useragent_and_ip_limit_key,
+    )
+)
+
 
 talisman = TalismanClass()
 """Shared instance of the ``Flask-Talisman`` extension.
@@ -55,6 +64,41 @@ an existing view function, as part of a function that is registered in the
         @talisman(content_security_policy={})
         def wrapped_profiler_report_view(*args, **kwargs):
             return orig_profiler_report_view(*args, **kwargs)
+"""
+
+
+limiter = LimiterClass(key_func=_ratelimit_key_func)
+"""Shared instance of the ``Flask-Limiter`` extension.
+
+This ``Limiter`` instance gets registered as part of the ``Invenio-App``
+extension initialization.
+
+For example, it can be used to set a custom limit for a new view function:
+
+.. code-block:: python
+
+    import random
+    from invenio_app import limiter
+
+    @app.route("/daily-fortune")
+    @limiter.limit("1/day")
+    def lucky_d6():
+        return random.randint(1, 6)
+
+
+If that fails with ``RuntimeError: Working outside of application context.``,
+use the ``app.app_context()`` context manager around the ``limiter`` usage:
+
+.. code-block:: python
+
+    import random
+    from invenio_app import limiter
+
+    with app.app_context():
+        @app.route("/daily-fortune")
+        @limiter.limit("1/day")
+        def lucky_d6():
+            return random.randint(1, 6)
 """
 
 
@@ -94,20 +138,15 @@ class InvenioApp(object):
         # Flask limiter needs to be initialised after talisman, since if the
         # talisman preprocessor doesn't run you will get an error on it's
         # afterprocessor.
-        self.limiter = Limiter(
-            app,
-            key_func=obj_or_import_string(
-                app.config.get("RATELIMIT_KEY_FUNC"), default=useragent_and_ip_limit_key
-            ),
-        )
+        self.limiter = limiter
+        self.limiter.init_app(app)
 
         # Enable PING view
         if app.config["APP_HEALTH_BLUEPRINT_ENABLED"]:
             blueprint = Blueprint("invenio_app_ping", __name__)
-            limiter = self.limiter
 
             @blueprint.route("/ping", methods=["HEAD", "OPTIONS", "GET"])
-            @limiter.exempt
+            @self.limiter.exempt
             def ping():
                 """Load balancer ping view."""
                 return "OK"
