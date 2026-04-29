@@ -10,6 +10,15 @@
 Changes
 =======
 
+Version v3.1.0 (released 2026-04-29)
+
+- feat(ext): provide easier-to-access Flask-Limiter instance
+    * this requires a bump of the `Flask-Limiter` dependency, due to an
+      `assert key_func` statement not playing nice with `LocalProxy` objects
+      in older versions of `Flask-Limiter`
+- feat(ext): provide easier-to-access Flask-Talisman instance
+    * addresses https://github.com/inveniosoftware/invenio-app/issues/22
+
 Version v3.0.0 (released 2026-01-27)
 
 - chore(setup): bump dependencies

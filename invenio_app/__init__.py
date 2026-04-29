@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2017-2018 CERN.
+# Copyright (C) 2017-2026 CERN.
 # Copyright (C) 2024-2026 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
@@ -170,7 +170,7 @@ to overwrite any existing Invenio files.
 
 from .ext import InvenioApp, limiter, talisman
 
-__version__ = "3.0.0"
+__version__ = "3.1.0"
 
 __all__ = (
     "__version__",
