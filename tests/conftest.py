@@ -68,7 +68,7 @@ def app(base_app):
         RATELIMIT_HEADERS_ENABLED=True,
     )
     Limiter(
-        base_app,
+        app=base_app,
         key_func=obj_or_import_string(
             base_app.config.get("RATELIMIT_KEY_FUNC"),
             default=useragent_and_ip_limit_key,
