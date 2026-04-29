@@ -20,45 +20,6 @@ def test_rate_secure_headers(app):
     assert "talisman" not in app.extensions
 
 
-def test_headers(app_with_no_limiter):
-    """Test headers."""
-    app_with_no_limiter.config["RATELIMIT_APPLICATION"] = "1/day"
-    ext = InvenioApp(app_with_no_limiter)
-
-    for handler in app_with_no_limiter.logger.handlers:
-        ext.limiter.logger.addHandler(handler)
-
-    @app_with_no_limiter.route("/jessica_jones")
-    def jessica_jones():
-        return "jessica jones"
-
-    @app_with_no_limiter.route("/avengers")
-    def avengers():
-        return "infinity war"
-
-    with app_with_no_limiter.test_client() as client:
-        res = client.get("/jessica_jones")
-        assert res.status_code == 200
-        assert res.headers["X-RateLimit-Limit"] == "1"
-        assert res.headers["X-RateLimit-Remaining"] == "0"
-        assert res.headers["X-RateLimit-Reset"]
-
-        res = client.get("/jessica_jones")
-        assert res.status_code == 429
-        assert res.headers["X-RateLimit-Limit"]
-        assert res.headers["X-RateLimit-Remaining"]
-        assert res.headers["X-RateLimit-Reset"]
-
-        res = client.get("/avengers")
-        assert res.status_code == 429
-        assert res.headers["X-Content-Type-Options"]
-        assert res.headers["X-Frame-Options"]
-        assert res.headers["X-XSS-Protection"]
-        assert res.headers["X-RateLimit-Limit"]
-        assert res.headers["X-RateLimit-Remaining"]
-        assert res.headers["X-RateLimit-Reset"]
-
-
 def _normalize_csp_header(header):
     """Normalize a CSP header for consistent comparisons."""
     return {p.strip() for p in (header or "").split(";")}

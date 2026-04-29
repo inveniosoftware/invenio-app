@@ -49,15 +49,25 @@ def base_app():
     return app_
 
 
+@pytest.fixture(scope="module")
+def fresh_limiter_instance():
+    """Enforce a fresh limiter instance for test module."""
+    import invenio_app.ext
+
+    invenio_app.ext.limiter = invenio_app.ext.LimiterClass(
+        key_func=invenio_app.ext._ratelimit_key_func
+    )
+
+
 @pytest.fixture()
-def app_with_no_limiter(base_app):
+def app_with_no_limiter(base_app, fresh_limiter_instance):
     """Flask application fixture without limiter registered."""
     with base_app.app_context():
         yield base_app
 
 
 @pytest.fixture()
-def app(base_app):
+def app(base_app, fresh_limiter_instance):
     """Flask application fixture."""
     base_app.config.update(
         TRUSTED_HOSTS=["localhost"],
