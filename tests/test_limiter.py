@@ -9,6 +9,7 @@
 """Module tests."""
 
 from collections import namedtuple
+from importlib import import_module
 from unittest.mock import patch
 
 from flask import current_app
@@ -34,9 +35,10 @@ def test_limiter(app):
 
 
 FakeUser = namedtuple("User", ["is_authenticated"])
+limiter_module = import_module("invenio_app.limiter")
 
 
-@patch("invenio_app.limiter.current_user", FakeUser(is_authenticated=True))
+@patch.object(limiter_module, "current_user", FakeUser(is_authenticated=True))
 def test_limiter_for_authenticated_user(app):
     """Test the Flask limiter function."""
     with app.test_client() as client:
@@ -46,7 +48,7 @@ def test_limiter_for_authenticated_user(app):
         assert 200 == client.get("/unlimited_rate").status_code
 
 
-@patch("invenio_app.limiter.current_user", FakeUser(is_authenticated=True))
+@patch.object(limiter_module, "current_user", FakeUser(is_authenticated=True))
 def test_limiter_for_privileged_user(app, push_rate_limit_to_context):
     """Test the Flask limiter function."""
     with app.test_client() as client:
