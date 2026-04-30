@@ -2,7 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2017-2018 CERN.
-# Copyright (C) 2024 Graz University of Technology.
+# Copyright (C) 2024-2025 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -206,3 +206,6 @@ add it as a header to both the upstream WSGI server and downstream client::
 
 Set to ``None`` to not extract a request id.
 """
+
+FLASK_DEBUGTOOLBAR_ENABLED = True
+"""Make it possible to disable the warning."""

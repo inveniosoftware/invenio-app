@@ -2,7 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2017-2019 CERN.
-# Copyright (C) 2024 Graz University of Technology.
+# Copyright (C) 2024-2025 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -23,7 +23,7 @@ def test_version():
 
 def test_config_loader():
     """Test config loader."""
-    app = create_ui()
+    app = create_ui(SECRET_KEY="CHANGE_ME")
     assert app.jinja_env.cache_size == 1000
 
 
@@ -33,6 +33,7 @@ def test_trusted_hosts():
         TRUSTED_HOSTS=["example.org", "www.example.org"],
         APP_ENABLE_SECURE_HEADERS=False,
         RATELIMIT_ENABLED=False,
+        SECRET_KEY="CHANGE_ME",
     )
 
     @app.route("/host")

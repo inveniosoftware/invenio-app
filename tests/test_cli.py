@@ -14,8 +14,10 @@ import importlib.metadata
 from click.testing import CliRunner
 
 
-def test_basic_cli():
+def test_basic_cli(app_config):
     """Test version import."""
+    app_config["SECRET_KEY"] = "CHANGE_ME"
+
     from invenio_app.cli import cli
 
     res = CliRunner().invoke(cli)
