@@ -10,6 +10,13 @@
 Changes
 =======
 
+Version v3.1.1 (released 2026-04-30)
+
+- fix(installation): add Python 3.9-compatible Flask-Limiter version
+    * Since there are no publicly breaking changes between the two major
+      releases of Flask-Limiter, we can still support Python 3.9, by
+      installing `Flask-Limiter==3.11`.
+
 Version v3.1.0 (released 2026-04-29)
 
 - feat(ext): provide easier-to-access Flask-Limiter instance

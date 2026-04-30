@@ -170,7 +170,7 @@ to overwrite any existing Invenio files.
 
 from .ext import InvenioApp, limiter, talisman
 
-__version__ = "3.1.0"
+__version__ = "3.1.1"
 
 __all__ = (
     "__version__",
