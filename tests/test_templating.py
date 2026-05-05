@@ -2,6 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2020 CERN.
+# Copyright (C) 2025 Graz University of Technology.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -46,7 +47,7 @@ def blueprint():
 @pytest.fixture()
 def notheme_app(instance_path, blueprint):
     """Application without template theming."""
-    app = create_ui()
+    app = create_ui(SECRET_KEY="CHANGE_ME")
     app.register_blueprint(blueprint)
     with app.app_context():
         yield app
@@ -55,7 +56,10 @@ def notheme_app(instance_path, blueprint):
 @pytest.fixture()
 def theme_app(instance_path, blueprint):
     """Application with template theming."""
-    app = create_ui(APP_THEME=["semantic-ui", "bootstrap3"])
+    app = create_ui(
+        APP_THEME=["semantic-ui", "bootstrap3"],
+        SECRET_KEY="CHANGE_ME",
+    )
     app.register_blueprint(blueprint)
     with app.app_context():
         yield app
