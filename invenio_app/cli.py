@@ -27,27 +27,43 @@ from .factory import create_app
 cli = create_cli(create_app=create_app)
 
 
+class ServerStop(BaseException):
+    """Raised by the SIGTERM handler to stop the server.
+
+    Derives from BaseException so a terminating signal that lands during a
+    command is not mistaken for the command's own SystemExit and reported
+    as its exit code.
+    """
+
+
 def error_response(message):
     """Build the response for a malformed request."""
     return {"exit_code": 2, "stdout": "", "stderr": message + "\n"}
 
 
 def recv_request(sock):
-    """Read one JSON line plus any file descriptors sent with it."""
+    """Read one JSON line plus any file descriptors sent with it.
+
+    Also reports whether ancillary data was truncated (i.e. more
+    descriptors arrived than fit the buffer), so the caller can reject
+    the request instead of running it with silently dropped descriptors.
+    """
     buf = b""
     fds = []
+    truncated = False
     fd_size = array.array("i").itemsize
     while b"\n" not in buf:
-        data, ancdata, _, _ = sock.recvmsg(65536, socket.CMSG_SPACE(2 * fd_size))
+        data, ancdata, flags, _ = sock.recvmsg(65536, socket.CMSG_SPACE(2 * fd_size))
         if not data:
             break
+        truncated = truncated or bool(flags & socket.MSG_CTRUNC)
         for level, ctype, cdata in ancdata:
             if level == socket.SOL_SOCKET and ctype == socket.SCM_RIGHTS:
                 received = array.array("i")
                 received.frombytes(cdata[: len(cdata) - (len(cdata) % fd_size)])
                 fds.extend(received)
         buf += data
-    return buf, fds
+    return buf, fds, truncated
 
 
 class RPCRequestHandler(socketserver.BaseRequestHandler):
@@ -55,9 +71,15 @@ class RPCRequestHandler(socketserver.BaseRequestHandler):
 
     def handle(self):
         """Answer a single request with a single JSON line."""
-        line, fds = recv_request(self.request)
+        line, fds, truncated = recv_request(self.request)
         try:
             if not line:
+                return
+
+            if truncated:
+                self.respond(
+                    error_response("Truncated file descriptor data (too many fds).")
+                )
                 return
 
             try:
@@ -115,16 +137,21 @@ class RPCServer(socketserver.UnixStreamServer):
 
         Output goes to whatever ``sys.stdout``/``sys.stderr`` point at when
         called. The shared ``ScriptInfo`` caches the Flask app, so only the
-        first command pays for the app creation. ``standalone_mode`` makes
-        click print usage errors itself and exit with its usual exit codes.
+        first command pays for the app creation. Each command runs in a
+        fresh app context (commands skip pushing their own when one is
+        already active), so ``flask.g`` and teardown handlers — e.g. the
+        SQLAlchemy session removal — behave per command, not per server
+        lifetime. ``standalone_mode`` makes click print usage errors itself
+        and exit with its usual exit codes.
         """
         try:
-            cli.main(
-                args=argv,
-                prog_name="invenio",
-                obj=self.script_info,
-                standalone_mode=True,
-            )
+            with self.script_info.load_app().app_context():
+                cli.main(
+                    args=argv,
+                    prog_name="invenio",
+                    obj=self.script_info,
+                    standalone_mode=True,
+                )
         except SystemExit as e:
             if e.code is None:
                 return 0
@@ -174,12 +201,18 @@ class RPCServer(socketserver.UnixStreamServer):
             with redirect_stdout(out), redirect_stderr(err):
                 exit_code = self.run_cli(argv)
         finally:
-            out.close()
-            err.close()
+            # restore our own stdio before anything that can raise — a
+            # close() flushes and fails on a client-closed pipe, and that
+            # must not leave fd 1/2 pointing at the dead client
             os.dup2(saved_stdout, 1)
             os.dup2(saved_stderr, 2)
             os.close(saved_stdout)
             os.close(saved_stderr)
+            for stream in (out, err):
+                try:
+                    stream.close()
+                except OSError:
+                    pass
         return {"exit_code": exit_code}
 
 
@@ -260,14 +293,19 @@ def rpc_server_start(socket_path):
     server = RPCServer(socket_path, ScriptInfo(create_app=lambda: app))
     os.chmod(socket_path, 0o600)
     pid_path.write_text(str(os.getpid()))
-    signal.signal(signal.SIGTERM, lambda signo, frame: sys.exit(0))
+
+    def stop(signo, frame):
+        """Translate SIGTERM into a ServerStop exception."""
+        raise ServerStop()
+
+    signal.signal(signal.SIGTERM, stop)
     # stream promptly when output is forwarded to a client terminal
     sys.stdout.reconfigure(line_buffering=True)
 
     secho(f"RPC server listening on {socket_path} (Press Ctrl+C to stop)", fg="green")
     try:
         server.serve_forever()
-    except (KeyboardInterrupt, SystemExit):
+    except (KeyboardInterrupt, ServerStop):
         pass
     finally:
         server.server_close()

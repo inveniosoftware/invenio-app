@@ -16,6 +16,7 @@ import threading
 from pathlib import Path
 
 import pytest
+from flask import g
 from flask.cli import ScriptInfo
 
 from invenio_app.cli import RPCServer, send_request
@@ -117,3 +118,49 @@ def test_wrong_fd_count_is_rejected(rpc_socket):
     os.close(read_end)
     assert response["exit_code"] == 2
     assert "two file descriptors" in response["stderr"]
+
+
+def test_too_many_fds_are_rejected(rpc_socket):
+    """Descriptors beyond stdout/stderr truncate and reject the request."""
+    pipes = [os.pipe() for _ in range(3)]
+    response = send_request(
+        rpc_socket, {"argv": ["--help"]}, fds=[write_end for _, write_end in pipes]
+    )
+    for read_end, write_end in pipes:
+        os.close(read_end)
+        os.close(write_end)
+    assert response["exit_code"] == 2
+    assert "Truncated" in response["stderr"]
+
+
+def test_each_command_gets_a_fresh_app_context(rpc_socket, base_app):
+    """flask.g must not leak from one command into the next."""
+
+    @base_app.cli.command("g-probe")
+    def g_probe():
+        """Print the leftover value, then pollute flask.g."""
+        print(g.get("probe"))
+        g.probe = "leaked"
+
+    first = send_request(rpc_socket, {"argv": ["g-probe"]})
+    second = send_request(rpc_socket, {"argv": ["g-probe"]})
+    assert first["stdout"] == "None\n"
+    assert second["stdout"] == "None\n"
+
+
+def test_server_survives_a_client_with_closed_pipes(rpc_socket):
+    """A broken client pipe must not wedge the server's own stdio."""
+    out_read, out_write = os.pipe()
+    err_read, err_write = os.pipe()
+    # close the read ends so the server writes into broken pipes
+    os.close(out_read)
+    os.close(err_read)
+    try:
+        send_request(rpc_socket, {"argv": ["--help"]}, fds=[out_write, err_write])
+    except ValueError:
+        pass  # the connection may drop without a response
+    os.close(out_write)
+    os.close(err_write)
+
+    assert send_request(rpc_socket, {"ping": True}) == {"pong": True}
+    assert send_request(rpc_socket, {"argv": ["--help"]})["exit_code"] == 0
