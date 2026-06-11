@@ -38,6 +38,10 @@ Repository = "https://github.com/inveniosoftware/invenio-app"
 
 [project.scripts]
 invenio = "invenio_app.cli:cli"
+rpc-server = "invenio_app.cli:rpc_server"
+
+[project.entry-points."flask.commands"]
+rpc-server = "invenio_app.cli:rpc_server"
 
 [project.entry-points."invenio_base.api_apps"]
 invenio_app = "invenio_app:InvenioApp"
