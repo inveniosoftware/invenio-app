@@ -9,6 +9,7 @@
 """RPC server tests."""
 
 import json
+import os
 import socket
 import tempfile
 import threading
@@ -80,3 +81,39 @@ def test_unknown_command(rpc_socket):
     response = send_request(rpc_socket, {"argv": ["definitely-not-a-command"]})
     assert response["exit_code"] == 2
     assert "No such command" in response["stderr"]
+
+
+def _read_all(fd):
+    """Read from fd until EOF."""
+    chunks = []
+    while chunk := os.read(fd, 4096):
+        chunks.append(chunk)
+    os.close(fd)
+    return b"".join(chunks)
+
+
+def test_output_streams_to_passed_fds(rpc_socket):
+    """With fds attached, output streams to them and only the code returns."""
+    out_read, out_write = os.pipe()
+    err_read, err_write = os.pipe()
+    response = send_request(
+        rpc_socket, {"argv": ["--help"]}, fds=[out_write, err_write]
+    )
+    # close our copies so reading the pipes terminates once the server
+    # closes its received descriptors
+    os.close(out_write)
+    os.close(err_write)
+
+    assert response == {"exit_code": 0}
+    assert b"Usage: invenio" in _read_all(out_read)
+    assert _read_all(err_read) == b""
+
+
+def test_wrong_fd_count_is_rejected(rpc_socket):
+    """Sending a single fd is an error, not a crash."""
+    read_end, write_end = os.pipe()
+    response = send_request(rpc_socket, {"argv": ["--help"]}, fds=[write_end])
+    os.close(write_end)
+    os.close(read_end)
+    assert response["exit_code"] == 2
+    assert "two file descriptors" in response["stderr"]
