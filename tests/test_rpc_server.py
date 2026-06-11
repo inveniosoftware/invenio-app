@@ -15,12 +15,13 @@ import threading
 from pathlib import Path
 
 import pytest
+from flask.cli import ScriptInfo
 
 from invenio_app.cli import RPCServer, send_request
 
 
 @pytest.fixture()
-def rpc_socket():
+def rpc_socket(base_app):
     """A running RPC server on a temporary socket.
 
     Uses a short-lived directory under /tmp because AF_UNIX paths are
@@ -28,7 +29,7 @@ def rpc_socket():
     """
     tmp_dir = tempfile.TemporaryDirectory(prefix="rpc", dir="/tmp")
     socket_path = Path(tmp_dir.name) / "rpc.sock"
-    server = RPCServer(socket_path)
+    server = RPCServer(socket_path, ScriptInfo(create_app=lambda: base_app))
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     yield socket_path
@@ -64,3 +65,18 @@ def test_argv_must_be_a_list_of_strings(rpc_socket):
     response = send_request(rpc_socket, {"argv": "collect"})
     assert response["exit_code"] == 2
     assert "list of strings" in response["stderr"]
+
+
+def test_command_stdout_and_exit_code(rpc_socket):
+    """A successful command returns its stdout and exit code 0."""
+    response = send_request(rpc_socket, {"argv": ["--help"]})
+    assert response["exit_code"] == 0
+    assert "Usage: invenio" in response["stdout"]
+    assert response["stderr"] == ""
+
+
+def test_unknown_command(rpc_socket):
+    """Usage errors come back on stderr with click's exit code."""
+    response = send_request(rpc_socket, {"argv": ["definitely-not-a-command"]})
+    assert response["exit_code"] == 2
+    assert "No such command" in response["stderr"]
