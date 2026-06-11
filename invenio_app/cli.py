@@ -1,16 +1,20 @@
-# SPDX-FileCopyrightText: 2017-2018 CERN.
+# SPDX-FileCopyrightText: 2017-2026 CERN.
 # SPDX-FileCopyrightText: 2025 Graz University of Technology.
 # SPDX-License-Identifier: MIT
 
 """CLI application for Invenio flavours."""
 
-import contextlib
-import io
+import json
 import socket
 import socketserver
-from pickle import dumps, loads
+import sys
+import traceback
+from contextlib import redirect_stderr, redirect_stdout
+from io import StringIO
+from pathlib import Path
 
-from click import group, option, pass_context, secho
+from click import ClickException, echo, group, option, pass_context, secho
+from flask import current_app
 from flask.cli import with_appcontext
 from invenio_base.app import create_cli
 
@@ -20,55 +24,126 @@ from .factory import create_app
 cli = create_cli(create_app=create_app)
 
 
-class RPCRequestHandler(socketserver.BaseRequestHandler):
-    """RPCRequestHandler."""
+def error_response(message):
+    """Build the response for a malformed request."""
+    return {"exit_code": 2, "stdout": "", "stderr": message + "\n"}
+
+
+class RPCRequestHandler(socketserver.StreamRequestHandler):
+    """Handler for newline-delimited JSON requests."""
 
     def handle(self):
-        """Handles the requests to the RPCServer."""
-        data = self.request.recv(4096)
-
-        if not data:
+        """Answer a single request with a single JSON line."""
+        line = self.rfile.readline()
+        if not line:
             return
 
         try:
-            command_parts = loads(data)
+            request = json.loads(line)
+        except ValueError:
+            self.respond(error_response("Request is not valid JSON."))
+            return
 
-            if not isinstance(command_parts, list) or len(command_parts) == 0:
-                raise ValueError("Invalid command format should be a list.")
+        if request.get("ping"):
+            self.respond({"pong": True})
+            return
 
-            if command_parts[0] == "ping":
-                result = "pong"
-            else:
-                output_buffer = io.StringIO()
-                with contextlib.redirect_stdout(output_buffer):
-                    cli.main(args=command_parts, standalone_mode=False)
-                result = output_buffer.getvalue().strip()
+        argv = request.get("argv")
+        if not isinstance(argv, list) or not all(isinstance(a, str) for a in argv):
+            self.respond(error_response("'argv' must be a list of strings."))
+            return
 
-            response = {"success": True, "result": result}
-        except Exception as e:
-            response = {"success": False, "error": str(e)}
+        self.respond(self.server.execute(argv))
 
-        self.request.sendall(dumps(response))
-
-
-class RPCServer(socketserver.TCPServer):
-    """RPCServer implementation."""
-
-    allow_reuse_address = True
-
-    def shutdown_server(self):
-        """Shutdown the server."""
-        secho("Shutting down RPC Server...", fg="green")
-        self.shutdown()
-        self.server_close()
+    def respond(self, payload):
+        """Write a response as a single JSON line."""
+        self.wfile.write(json.dumps(payload).encode("utf-8") + b"\n")
 
 
-def send(host, port, args):
-    """Send."""
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.connect((host, port))
-        s.sendall(dumps(list(args)))
-        return loads(s.recv(16384))
+class RPCServer(socketserver.UnixStreamServer):
+    """Serve invenio CLI commands on a Unix domain socket.
+
+    Requests are handled one at a time, which also serializes commands sent
+    by concurrent clients.
+    """
+
+    def __init__(self, socket_path):
+        """Construct."""
+        super().__init__(str(socket_path), RPCRequestHandler)
+
+    def execute(self, argv):
+        """Run a CLI command and capture its output and exit code.
+
+        Only Python-level output is captured; output written directly to the
+        file descriptors by subprocesses (e.g. webpack builds) goes to the
+        server's own stdout/stderr.
+        """
+        stdout, stderr = StringIO(), StringIO()
+        exit_code = 0
+        with redirect_stdout(stdout), redirect_stderr(stderr):
+            try:
+                cli.main(args=argv, prog_name="invenio", standalone_mode=False)
+            except SystemExit as e:
+                if isinstance(e.code, int):
+                    exit_code = e.code
+                elif e.code is not None:
+                    stderr.write(f"{e.code}\n")
+                    exit_code = 1
+            except Exception:
+                traceback.print_exc(file=stderr)
+                exit_code = 1
+        return {
+            "exit_code": exit_code,
+            "stdout": stdout.getvalue(),
+            "stderr": stderr.getvalue(),
+        }
+
+
+def send_request(socket_path, payload):
+    """Send one request to a server and return the decoded response."""
+    with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
+        s.connect(str(socket_path))
+        s.sendall(json.dumps(payload).encode("utf-8") + b"\n")
+        with s.makefile("rb") as f:
+            return json.loads(f.readline())
+
+
+def _socket_path(value):
+    """Resolve the socket path, defaulting to the app instance directory."""
+    return Path(value) if value else Path(current_app.instance_path) / "rpc.sock"
+
+
+def _ensure_socket_is_free(socket_path):
+    """Remove a stale socket file, or fail if a server is listening on it."""
+    if not socket_path.exists():
+        return
+    probe = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    try:
+        probe.settimeout(1)
+        probe.connect(str(socket_path))
+    except OSError:
+        # nothing is listening, the file was left behind by a dead server
+        socket_path.unlink()
+    else:
+        raise ClickException(f"An RPC server is already listening on {socket_path}.")
+    finally:
+        probe.close()
+
+
+def _request_or_fail(socket_path, payload):
+    """Send a request, turning connection problems into a CLI error."""
+    try:
+        return send_request(socket_path, payload)
+    except OSError as e:
+        raise ClickException(f"No RPC server reachable on {socket_path} ({e}).")
+
+
+socket_option = option(
+    "--socket",
+    "socket_path",
+    default=None,
+    help="Path to the server socket (default: <instance_path>/rpc.sock).",
+)
 
 
 @group()
@@ -77,52 +152,47 @@ def rpc_server():
 
 
 @rpc_server.command("start")
-@option("--port", default=5000)
-@option("--host", default="localhost")
+@socket_option
 @with_appcontext
-def rpc_server_start(port, host):
-    """Start rpc server."""
-    server = RPCServer((host, port), RPCRequestHandler)
+def rpc_server_start(socket_path):
+    """Start the RPC server."""
+    socket_path = _socket_path(socket_path)
+    _ensure_socket_is_free(socket_path)
 
-    secho(
-        f"RPC Server is running on port {host}:{port}... (Press Ctrl+C to stop)",
-        fg="green",
-    )
-
+    server = RPCServer(socket_path)
+    secho(f"RPC server listening on {socket_path} (Press Ctrl+C to stop)", fg="green")
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        server.shutdown()
+        pass
+    finally:
+        server.server_close()
+        socket_path.unlink(missing_ok=True)
 
 
 @rpc_server.command(
     "send",
     context_settings={"allow_extra_args": True, "ignore_unknown_options": True},
 )
-@option("--port", default=5000)
-@option("--host", default="localhost")
-@option("--plain", is_flag=True, default=False)
+@socket_option
+@with_appcontext
 @pass_context
-def rpc_server_send(ctx, port, host, plain):
-    """Send."""
-    response = send(host, port, ctx.args)
-
-    if response["success"]:
-        prefix = "" if plain else "Response: "
-        color = "green"
-        message = response["result"]
-    else:
-        prefix = "" if plain else "Error: "
-        color = "red"
-        message = response["error"]
-
-    secho(f"{prefix}{message}", fg=color)
+def rpc_server_send(ctx, socket_path):
+    """Run a CLI command on the RPC server and relay its output."""
+    response = _request_or_fail(_socket_path(socket_path), {"argv": ctx.args})
+    if response["stdout"]:
+        echo(response["stdout"], nl=False)
+    if response["stderr"]:
+        echo(response["stderr"], nl=False, err=True)
+    sys.exit(response["exit_code"])
 
 
 @rpc_server.command("ping")
-@option("--port", default=5000)
-@option("--host", default="localhost")
-def rpc_server_ping(port, host):
-    """Ping."""
-    response = send(host, port, ["ping"])
-    secho(response["result"])
+@socket_option
+@with_appcontext
+def rpc_server_ping(socket_path):
+    """Check whether the RPC server responds."""
+    response = _request_or_fail(_socket_path(socket_path), {"ping": True})
+    if not response.get("pong"):
+        raise ClickException("Unexpected response from the RPC server.")
+    secho("pong", fg="green")
