@@ -10,7 +10,7 @@ import socket
 import sys
 from pathlib import Path
 
-from click import ClickException, echo, group, option, pass_context, secho
+from click import ClickException, group, option, pass_context, secho
 from flask import current_app
 from flask.cli import ScriptInfo, with_appcontext
 from invenio_base.app import create_cli
@@ -44,10 +44,10 @@ def _ensure_socket_is_free(socket_path):
         probe.close()
 
 
-def _request_or_fail(socket_path, payload):
+def _request_or_fail(socket_path, payload, fds=None):
     """Send a request, turning connection problems into a CLI error."""
     try:
-        return send_request(socket_path, payload)
+        return send_request(socket_path, payload, fds=fds)
     except OSError as e:
         raise ClickException(f"No RPC server reachable on {socket_path} ({e}).")
 
@@ -104,14 +104,21 @@ def rpc_server_start(socket_path):
     "send",
     context_settings={"allow_extra_args": True, "ignore_unknown_options": True},
 )
-@socket_option
-@with_appcontext
+@option("--socket", "socket_path", required=True, help="Path to the server socket.")
 @pass_context
 def rpc_server_send(ctx, socket_path):
-    """Run a CLI command on the RPC server and relay its output."""
-    response = _request_or_fail(_socket_path(socket_path), {"argv": ctx.args})
-    if response["stdout"]:
-        echo(response["stdout"], nl=False)
-    if response["stderr"]:
-        echo(response["stderr"], nl=False, err=True)
+    """Run a CLI command on the RPC server, streaming its output here.
+
+    Takes an explicit socket path instead of deriving it from the app, so
+    no app is created and a bulk of sends only pays the import cost. The
+    command's stdout/stderr are passed to the server, which writes the
+    output straight to them, live and correctly interleaved.
+    """
+    sys.stdout.flush()
+    sys.stderr.flush()
+    response = _request_or_fail(
+        socket_path,
+        {"argv": ctx.args},
+        fds=[sys.stdout.fileno(), sys.stderr.fileno()],
+    )
     sys.exit(response["exit_code"])

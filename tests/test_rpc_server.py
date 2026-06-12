@@ -11,6 +11,8 @@
 import json
 import os
 import socket
+import subprocess
+import sys
 import tempfile
 import threading
 from pathlib import Path
@@ -144,6 +146,27 @@ def test_each_command_gets_a_fresh_app_context(rpc_socket, base_app):
     second = send_request(rpc_socket, {"argv": ["g-probe"]})
     assert first["stdout"] == "None\n"
     assert second["stdout"] == "None\n"
+
+
+def test_standalone_send_streams_output_and_exit_codes(rpc_socket):
+    """The app-free rpc-server script relays fd-forwarded output."""
+    rpc_server_bin = Path(sys.executable).parent / "rpc-server"
+
+    ok = subprocess.run(
+        [rpc_server_bin, "send", "--socket", str(rpc_socket), "--version"],
+        capture_output=True,
+        text=True,
+    )
+    assert ok.returncode == 0
+    assert "Flask" in ok.stdout
+
+    bad = subprocess.run(
+        [rpc_server_bin, "send", "--socket", str(rpc_socket), "no-such-cmd"],
+        capture_output=True,
+        text=True,
+    )
+    assert bad.returncode == 2
+    assert "No such command" in bad.stderr
 
 
 def test_server_survives_a_client_with_closed_pipes(rpc_socket):
