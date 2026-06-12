@@ -41,15 +41,12 @@ def rpc_socket(base_app):
     tmp_dir.cleanup()
 
 
-def test_ping(rpc_socket):
-    """The server answers a ping."""
-    assert send_request(rpc_socket, {"ping": True}) == {"pong": True}
-
-
 def test_request_larger_than_a_socket_buffer(rpc_socket):
     """Requests are framed by line, not by a fixed read size."""
-    request = {"ping": True, "padding": "x" * 100_000}
-    assert send_request(rpc_socket, request) == {"pong": True}
+    request = {"argv": ["--help"], "padding": "x" * 100_000}
+    response = send_request(rpc_socket, request)
+    assert response["exit_code"] == 0
+    assert "Usage: invenio" in response["stdout"]
 
 
 def test_invalid_json(rpc_socket):
@@ -163,5 +160,4 @@ def test_server_survives_a_client_with_closed_pipes(rpc_socket):
     os.close(out_write)
     os.close(err_write)
 
-    assert send_request(rpc_socket, {"ping": True}) == {"pong": True}
     assert send_request(rpc_socket, {"argv": ["--help"]})["exit_code"] == 0

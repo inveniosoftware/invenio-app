@@ -88,10 +88,6 @@ class RPCRequestHandler(socketserver.BaseRequestHandler):
                 self.respond(error_response("Request is not valid JSON."))
                 return
 
-            if request.get("ping"):
-                self.respond({"pong": True})
-                return
-
             argv = request.get("argv")
             if not isinstance(argv, list) or not all(isinstance(a, str) for a in argv):
                 self.respond(error_response("'argv' must be a list of strings."))
