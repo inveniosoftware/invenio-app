@@ -115,14 +115,3 @@ def rpc_server_send(ctx, socket_path):
     if response["stderr"]:
         echo(response["stderr"], nl=False, err=True)
     sys.exit(response["exit_code"])
-
-
-@rpc_server.command("ping")
-@socket_option
-@with_appcontext
-def rpc_server_ping(socket_path):
-    """Check whether the RPC server responds."""
-    response = _request_or_fail(_socket_path(socket_path), {"ping": True})
-    if not response.get("pong"):
-        raise ClickException("Unexpected response from the RPC server.")
-    secho("pong", fg="green")
