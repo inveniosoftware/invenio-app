@@ -19,7 +19,8 @@ import pytest
 from flask import g
 from flask.cli import ScriptInfo
 
-from invenio_app.cli import RPCServer, send_request
+from invenio_app.cli import cli
+from invenio_app.rpc import RPCServer, send_request
 
 
 @pytest.fixture()
@@ -31,7 +32,7 @@ def rpc_socket(base_app):
     """
     tmp_dir = tempfile.TemporaryDirectory(prefix="rpc", dir="/tmp")
     socket_path = Path(tmp_dir.name) / "rpc.sock"
-    server = RPCServer(socket_path, ScriptInfo(create_app=lambda: base_app))
+    server = RPCServer(socket_path, cli, ScriptInfo(create_app=lambda: base_app))
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     yield socket_path
