@@ -1,3 +1,77 @@
+# SPDX-FileCopyrightText: 2017-2026 CERN.
+# SPDX-FileCopyrightText: 2021-2026 TU Wien.
+# SPDX-FileCopyrightText: 2022-2026 Graz University of Technology.
+# SPDX-License-Identifier: MIT
+
+[project]
+name = "invenio-app"
+description = "WSGI, Celery and CLI applications for Invenio flavours."
+readme = "README.rst"
+requires-python = ">=3.9"
+license = "MIT"
+authors = [
+  { name = "CERN", email = "info@inveniosoftware.org" },
+]
+keywords = [
+  "applications",
+  "invenio",
+]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+]
+dependencies = [
+  "flask-limiter>=3.11,<3.12; python_version < \"3.10\"",
+  "flask-limiter>=4,<5; python_version >= \"3.10\"",
+  "flask-shell-ipython>=0.3.1",
+  "flask-talisman>=0.3.2,<1.0",
+  "flask>=3.1.0",
+  "invenio-base>=2.2.0,<3.0.0",
+  "invenio-cache>=3.0.0,<4.0.0",
+  "invenio-celery>=2.0.0,<3.0.0",
+  "invenio-config>=1.0.0,<2.0.0",
+  "uritools>=1.0.1",
+]
+dynamic = ["version"]
+
+[project.urls]
+Repository = "https://github.com/inveniosoftware/invenio-app"
+
+[project.scripts]
+invenio = "invenio_app.cli:cli"
+
+[project.entry-points."invenio_base.api_apps"]
+invenio_app = "invenio_app:InvenioApp"
+
+[project.entry-points."invenio_base.apps"]
+invenio_app = "invenio_app:InvenioApp"
+
+[project.optional-dependencies]
+tests = [
+  "mock>=4.0.0",
+  "pytest-black>=0.6.0",
+  "pytest-invenio>=4.0.0,<5.0.0",
+  "sphinx>=5.0",
+]
+
 [build-system]
-requires = ["setuptools", "wheel", "babel>2.8"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "invenio_app/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/invenio_app",
+]
+
+[tool.isort]
+profile = "black"
+
+[tool.pydocstyle]
+add_ignore = "D401"
+
+[tool.pytest.ini_options]
+addopts = '--black --isort --pydocstyle --doctest-glob="*.rst" --doctest-modules --cov=invenio_app --cov-report=term-missing'
+testpaths = "tests invenio_app"
+live_server_scope = "module"
