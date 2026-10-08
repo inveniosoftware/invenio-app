@@ -8,6 +8,20 @@
 Changes
 =======
 
+Version v3.2.0 (released 2026-10-08)
+
+- feat(rpc): make send app-free and stream its output through fds
+- refactor(rpc): drop the ping
+- refactor(rpc): move the server machinery into its own module
+- fix(rpc): isolate app context, SIGTERM, and fd restore per request
+- feat(rpc): stream command output through passed file descriptors
+- perf(rpc): reuse the app across requests and add a pid file
+- refactor(rpc): switch to JSON lines over a Unix domain socket
+- fix: turn off warning SECRET_KEY
+- fix: turn off warning for RATELIMIT_STORAGE_URI
+- chore(ext): remove debug warning
+- feat(cli): add RPCServer commands
+
 Version v3.1.2 (released 2026-07-16)
 
 - chore(setup): migrate from setuptools to hatchling
