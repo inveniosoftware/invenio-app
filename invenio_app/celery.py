@@ -9,6 +9,7 @@ import sys
 
 from billiard.reduction import ForkingPickler
 from celery import Celery
+from celery.beat import Service
 from flask_celeryext import create_celery_app
 
 from .factory import create_ui
@@ -61,6 +62,20 @@ if sys.platform == "darwin":
         return _load_celery_app, ()
 
     ForkingPickler.register(Celery, _reduce_celery_app)
+
+    def _reduce_beat_service(service):
+        """Preserve Beat's constructor argument order when spawning on macOS."""
+        # Celery 5.4's Service.__reduce__ puts app last, although its
+        # constructor expects app first. Embedded Beat is also pickled
+        # under spawn, so it needs a corrected reducer of its own.
+        return Service, (
+            service.app,
+            service.max_interval,
+            service.schedule_filename,
+            service.scheduler_cls,
+        )
+
+    ForkingPickler.register(Service, _reduce_beat_service)
 
     # Make celery's prefork process initializer set up the fast_trace_task
     # optimization in the spawned processes, which inherit this variable.
