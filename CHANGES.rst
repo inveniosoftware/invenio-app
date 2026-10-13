@@ -3,10 +3,15 @@
     SPDX-FileCopyrightText: 2023-2026 Graz University of Technology.
     SPDX-FileCopyrightText: 2025 Northwestern University.
     SPDX-FileCopyrightText: 2026 TU Wien.
+    SPDX-FileCopyrightText: 2026 KTH Royal Institute of Technology.
     SPDX-License-Identifier: MIT
 
 Changes
 =======
+
+Version v3.2.1 (released 2026-10-13)
+
+- fix: pickle error on macos in celery workers and beat
 
 Version v3.2.0 (released 2026-10-08)
 
