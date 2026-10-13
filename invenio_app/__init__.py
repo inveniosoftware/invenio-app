@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2017-2026 CERN.
 # SPDX-FileCopyrightText: 2024-2026 Graz University of Technology.
 # SPDX-FileCopyrightText: 2026 TU Wien.
+# SPDX-FileCopyrightText: 2026 KTH Royal Institute of Technology.
 # SPDX-License-Identifier: MIT
 
 """WSGI, Celery and CLI applications for Invenio flavours.
@@ -166,7 +167,7 @@ to overwrite any existing Invenio files.
 
 from .ext import InvenioApp, limiter, talisman
 
-__version__ = "3.2.0"
+__version__ = "3.2.1"
 
 __all__ = (
     "__version__",
